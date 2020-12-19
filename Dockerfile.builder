@@ -18,7 +18,8 @@ RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 bu
     && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
 
 # Install Deps
-RUN apt-get install -y \
+RUN apt-get update \
+    && apt-get install -y \
         default-libmysqlclient-dev \
         libavdevice-dev \
         libavformat-dev \
@@ -47,6 +48,16 @@ RUN git clone --recursive https://github.com/ZoneMinder/zoneminder.git . \
     && make DESTDIR="/zminstall" install
 
 FROM debian:buster
+
+RUN apt-get update \
+    && apt-get install -y \
+        gnupg \
+        wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Required for libmp4v2-dev
+RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
+    && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
 
 # Install ZM Dependencies
 RUN apt-get update \
@@ -318,12 +329,12 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
+# Install ZM
+COPY --from=builder /zminstall /
+
 RUN adduser www-data video \
     && a2enconf zoneminder \
     && a2enmod rewrite
-
-# Install ZM
-COPY --from=builder /zminstall /
 
 # Configure entrypoint
 COPY entrypoint.sh /usr/local/bin/
