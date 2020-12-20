@@ -349,6 +349,7 @@ RUN apt-get update \
 
 # Install ZM
 COPY --from=builder /zminstall /
+COPY --from=builder /zmbuild/distros/ubuntu2004/conf/apache2/zoneminder.conf /etc/apache2/conf-available/
 
 RUN adduser www-data video \
     && a2enconf zoneminder \
