@@ -43,7 +43,25 @@ RUN apt-get update \
 
 
 RUN git clone --recursive https://github.com/ZoneMinder/zoneminder.git . \
-    && cmake . \
+    && cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_SKIP_RPATH=ON \
+        -DCMAKE_VERBOSE_MAKEFILE=OFF \
+        -DCMAKE_COLOR_MAKEFILE=ON \
+        -DZM_RUNDIR=/var/run/zm \
+        -DZM_SOCKDIR=/var/run/zm \
+        -DZM_TMPDIR=/var/tmp/zm \
+        -DZM_LOGDIR=/var/log/zm \
+        -DZM_WEBDIR=/usr/share/zoneminder/www \
+        -DZM_CONTENTDIR=/var/cache/zoneminder \
+        -DZM_CACHEDIR=/var/cache/zoneminder/cache \
+        -DZM_CGIDIR=/usr/lib/zoneminder/cgi-bin \
+        -DZM_WEB_USER=www-data \
+        -DZM_WEB_GROUP=www-data \
+        -DCMAKE_INSTALL_SYSCONFDIR=etc/zm \
+        -DZM_CONFIG_DIR=/etc/zm \
+        -DCMAKE_BUILD_TYPE=Debug \
+        . \
     && make \
     && make DESTDIR="/zminstall" install
 
