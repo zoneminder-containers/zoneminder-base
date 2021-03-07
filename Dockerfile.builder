@@ -7,6 +7,10 @@ RUN apt-get update \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
+# Required for libmp4v2-dev
+RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
+    && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
+
 # Install ZM Dependencies
 # https://github.com/ZoneMinder/zoneminder/blob/8ebaee998aa6b1de0123753a0df86b240235fa33/distros/ubuntu2004/control#L42
 # Todo directly install deps using mk-build-deps/find some way to directly parse the control file
@@ -68,7 +72,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install base toolset
 RUN apt-get update \
     && apt-get install -y \
-        sudo \
         git \
         cmake \
         build-essential \

@@ -5,10 +5,11 @@ This will be an AIO container running all services required by Zoneminder in a s
 
 
 TODO:
-- Fix symbolic linking in Zoneminder (causes ui to not load properly)
 - Implement s6 overlay
 - Install ZM Event Server
 - Implement CI/CD
+- Find way to parse control file to dynamically install deps (Need to install both Depends and Recommends)
+    - Consider writing python script to parse control file and output commands to a bash script
 
 Considerations:
 - Nginx
