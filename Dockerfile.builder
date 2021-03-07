@@ -87,6 +87,7 @@ RUN apt-get update \
         ffmpeg \
         javascript-common \
         libarchive-zip-perl \
+        libapache2-mod-php \
         libclass-std-fast-perl \
         libcrypt-eksblowfish-perl \
         libdata-dump-perl \
@@ -136,12 +137,34 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
+
 # Install ZM
 COPY --from=builder /zminstall /
 COPY --from=builder /zmbuild/distros/ubuntu2004/conf/apache2/zoneminder.conf /etc/apache2/conf-available/
 
+# Create users
 RUN adduser www-data video \
-    && a2enconf zoneminder \
+    && chown -R www-data:www-data /usr/share/zoneminder/www \
+    && chmod -R 755 /usr/share/zoneminder/www
+
+# Create required folders
+RUN mkdir -p \
+        /var/cache/zoneminder/events \
+        /var/cache/zoneminder/images \
+        /var/cache/zoneminder/temp \
+        /var/lib/zm \
+        /var/log/zm \
+    && chown -R www-data:www-data \
+        /var/cache/zoneminder \
+        /var/lib/zm \
+        /var/log/zm \
+    && chmod -R 755 \
+        /var/cache/zoneminder \
+        /var/lib/zm \
+        /var/log/zm
+
+# Reconfigure apache
+RUN a2enconf zoneminder \
     && a2enmod rewrite
 
 # Configure entrypoint

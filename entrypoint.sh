@@ -275,9 +275,7 @@ chk_remote_mysql () {
 start_http () {
     echo -n " * Starting Apache http web server service"
     # Debian requires we load the contents of envvars before we can start apache
-    if [ -f /etc/apache2/envvars ]; then
-        source /etc/apache2/envvars
-    fi
+    source /etc/apache2/envvars
     $HTTPBIN -k start > /dev/null 2>&1
     RETVAL=$?
     if [ "$RETVAL" = "0" ]; then
