@@ -149,6 +149,7 @@ RUN adduser www-data video \
 
 # Create required folders
 RUN mkdir -p \
+        /var/cache/zoneminder/cache \
         /var/cache/zoneminder/events \
         /var/cache/zoneminder/images \
         /var/cache/zoneminder/temp \
