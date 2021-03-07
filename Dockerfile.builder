@@ -1,4 +1,65 @@
-FROM debian:buster as builder
+# syntax=docker/dockerfile:experimental
+FROM debian:buster as base-image
+
+RUN apt-get update \
+    && apt-get install -y \
+        gnupg \
+        wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ZM Dependencies
+# https://github.com/ZoneMinder/zoneminder/blob/8ebaee998aa6b1de0123753a0df86b240235fa33/distros/ubuntu2004/control#L42
+# Todo directly install deps using mk-build-deps/find some way to directly parse the control file
+RUN apt-get update \
+    && apt-get install -y \
+        ffmpeg \
+        javascript-common \
+        libarchive-zip-perl \
+        libclass-std-fast-perl \
+        libcrypt-eksblowfish-perl \
+        libdata-dump-perl \
+        libdata-entropy-perl \
+        libdata-uuid-perl \
+        libdate-manip-perl \
+        libdatetime-perl \
+        libdbd-mysql-perl \
+        libdbd-mysql-perl \
+        libdevice-serialport-perl \
+        libdigest-sha-perl \
+        libfile-slurp-perl \
+        libimage-info-perl \
+        libio-socket-multicast-perl \
+        libjson-maybexs-perl \
+        liblivemedia64 \
+        libmime-lite-perl \
+        libmime-tools-perl \
+        libmodule-load-conditional-perl \
+        libnet-sftp-foreign-perl \
+        libnumber-bytes-human-perl \
+        libpcre3 \
+        libphp-serialization-perl \
+        libsoap-wsdl-perl \
+        libswresample3 \
+        libswscale5 \
+        libsys-cpu-perl \
+        libsys-meminfo-perl \
+        libsys-mmap-perl \
+        liburi-encode-perl \
+        liburi-perl \
+        libvncclient1 \
+        libwww-perl \
+        mariadb-client \
+        php-apcu \
+        php-apcu-bc \
+        php-gd \
+        php-json \
+        php-mysql \
+        policykit-1 \
+        rsyslog \
+        zip \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM base-image as builder
 WORKDIR /zmbuild
 
 # Skip interactive post-install scripts
@@ -13,34 +74,44 @@ RUN apt-get update \
         build-essential \
         wget
 
-# Required for libmp4v2-dev
-RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
-    && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
-
 # Install Deps
 RUN apt-get update \
     && apt-get install -y \
+        cmake \
+        debhelper \
         default-libmysqlclient-dev \
+        dh-apache2 \
+        dh-linktree \
+        ffmpeg \
+        libavcodec-dev \
         libavdevice-dev \
         libavformat-dev \
+        libavutil-dev \
+        libbz2-dev \
+        libcrypt-eksblowfish-perl \
         libcurl4-gnutls-dev \
+        libdata-entropy-perl \
+        libdata-uuid-perl \
         libdate-manip-perl \
         libdbd-mysql-perl \
-        libdbi-perl \
-        libdistro-info-perl \
         libgcrypt20-dev \
-        libgnutls28-dev \
-        libjpeg-dev \
-        libjwt-gnutls-dev \
-        libmp4v2-dev \
+        libjpeg62-turbo-dev \
+        liblivemedia-dev \
         libpcre3-dev \
+        libphp-serialization-perl \
         libpolkit-gobject-1-dev \
+        libssl-dev \
+        libswresample-dev \
+        libswscale-dev \
         libsys-mmap-perl \
+        libturbojpeg0-dev \
         libv4l-dev \
         libvlc-dev \
         libvncserver-dev \
-        libx264-dev
-
+        libwww-perl \
+        net-tools \
+        python3-sphinx \
+        sphinx-doc
 
 RUN git clone --recursive https://github.com/ZoneMinder/zoneminder.git . \
     && cmake \
@@ -65,87 +136,23 @@ RUN git clone --recursive https://github.com/ZoneMinder/zoneminder.git . \
     && make \
     && make DESTDIR="/zminstall" install
 
-FROM debian:buster
+FROM base-image as final-build
 
-RUN apt-get update \
-    && apt-get install -y \
-        gnupg \
-        wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Required for libmp4v2-dev
-RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
-    && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
-
-# Install ZM Dependencies
-# https://github.com/ZoneMinder/zoneminder/blob/8a26252914553ac888fe4e9d43419232d37e24d0/distros/debian/control#L36
-# https://github.com/ZoneMinder/zoneminder/blob/8a26252914553ac888fe4e9d43419232d37e24d0/distros/ubuntu2004/control#L47
-# + some pain and agony, maybe some tears
+# Install additional services required by ZM
 RUN apt-get update \
     && apt-get install -y \
         apache2 \
-        ffmpeg \
-        javascript-common \
-        libarchive-zip-perl \
         libapache2-mod-php \
-        libclass-std-fast-perl \
-        libcrypt-eksblowfish-perl \
-        libdata-dump-perl \
-        libdata-entropy-perl \
-        libdata-uuid-perl \
-        libdate-manip-perl \
-        libdatetime-perl \
-        libdbd-mysql-perl \
-        libdbd-mysql-perl \
-        libdevice-serialport-perl \
-        libdigest-sha-perl \
-        libfile-slurp-perl \
-        libimage-info-perl \
-        libio-socket-multicast-perl \
-        libjson-maybexs-perl \
-        libmime-lite-perl \
-        libmime-tools-perl \
-        libmodule-load-conditional-perl \
-        libmp4v2-2 \
-        libmp4v2-2 \
-        libnet-sftp-foreign-perl \
-        libnumber-bytes-human-perl \
-        libpcre3 \
-        libphp-serialization-perl \
-        libsoap-wsdl-perl \
-        libswresample3 \
-        libswscale5 \
-        libsys-cpu-perl \
-        libsys-meminfo-perl \
-        libsys-mmap-perl \
-        liburi-encode-perl \
-        liburi-perl \
-        libvncclient1 \
-        libwww-perl \
-        libx264-155 \
-        mariadb-client \
         mariadb-server \
-        perl-modules \
-        php-apcu \
-        php-apcu-bc \
         php-fpm \
-        php-gd \
-        php-json \
-        php-mysql \
-        policykit-1 \
-        rsyslog \
-        zip \
     && rm -rf /var/lib/apt/lists/*
 
+# Create users
+RUN adduser www-data video
 
 # Install ZM
-COPY --from=builder /zminstall /
-COPY --from=builder /zmbuild/distros/ubuntu2004/conf/apache2/zoneminder.conf /etc/apache2/conf-available/
-
-# Create users
-RUN adduser www-data video \
-    && chown -R www-data:www-data /usr/share/zoneminder/www \
-    && chmod -R 755 /usr/share/zoneminder/www
+COPY --chown=www-data --chmod=755 --from=builder /zminstall /
+COPY --chown=www-data --chmod=755 --from=builder /zmbuild/distros/ubuntu2004/conf/apache2/zoneminder.conf /etc/apache2/conf-available/
 
 # Create required folders
 RUN mkdir -p \
@@ -169,6 +176,5 @@ RUN a2enconf zoneminder \
     && a2enmod rewrite
 
 # Configure entrypoint
-COPY entrypoint.sh /usr/local/bin/
-RUN chmod 755 /usr/local/bin/entrypoint.sh
+COPY --chmod=755 entrypoint.sh /usr/local/bin/
 CMD ["/usr/local/bin/entrypoint.sh"]
