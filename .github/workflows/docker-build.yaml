@@ -38,8 +38,8 @@ jobs:
       # Temporarily set version
       - name: Gather Dependencies
         run: |
-          echo "zm_version=master" >> $GITHUB_ENV
-          wget -O ./control.txt https://raw.githubusercontent.com/ZoneMinder/zoneminder/${{ zm_version }}/distros/ubuntu2004/control
+          echo "ZM_VERSION=master" >> $GITHUB_ENV
+          wget -O ./control.txt https://raw.githubusercontent.com/ZoneMinder/zoneminder/${{ ZM_VERSION }}/distros/ubuntu2004/control
           python3 -u parse.py
 
       # label version as branch-run_number
@@ -48,7 +48,7 @@ jobs:
         run: |
           set -x
           docker build \
-            --build-arg ZM_VERSION=${{ zm_version }} \
+            --build-arg ZM_VERSION=${{ ZM_VERSION }} \
             --build-arg BUILD_VERSION=${GITHUB_REF##*/}-${{ github.run_number }} \
             --tag ci:${{ github.run_number }} \
             --platform ${{ matrix.arch }} \
