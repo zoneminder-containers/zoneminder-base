@@ -59,18 +59,18 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DCMAKE_SKIP_RPATH=ON \
         -DCMAKE_VERBOSE_MAKEFILE=OFF \
         -DCMAKE_COLOR_MAKEFILE=ON \
-        -DZM_RUNDIR=/var/run/zm \
-        -DZM_SOCKDIR=/var/run/zm \
-        -DZM_TMPDIR=/var/tmp/zm \
-        -DZM_LOGDIR=/var/log/zm \
-        -DZM_WEBDIR=/usr/share/zoneminder/www \
-        -DZM_CONTENTDIR=/var/cache/zoneminder \
-        -DZM_CACHEDIR=/var/cache/zoneminder/cache \
-        -DZM_CGIDIR=/usr/lib/zoneminder/cgi-bin \
+        -DZM_RUNDIR=/zoneminder/run \
+        -DZM_SOCKDIR=/zoneminder/run \
+        -DZM_TMPDIR=/zoneminder/tmp \
+        -DZM_LOGDIR=/log \
+        -DZM_WEBDIR=/var/www/html \
+        -DZM_CONTENTDIR=/zoneminder/content \
+        -DZM_CACHEDIR=/zoneminder/cache \
+        -DZM_CGIDIR=/zoneminder/cgi-bin \
         -DZM_WEB_USER=www-data \
         -DZM_WEB_GROUP=www-data \
-        -DCMAKE_INSTALL_SYSCONFDIR=etc/zm \
-        -DZM_CONFIG_DIR=/etc/zm \
+        -DCMAKE_INSTALL_SYSCONFDIR=config \
+        -DZM_CONFIG_DIR=/zoneminder/config \
         -DCMAKE_BUILD_TYPE=Debug \
         . \
     && make \
@@ -95,21 +95,23 @@ RUN adduser www-data video
 COPY --chown=www-data --chmod=755 --from=builder /zminstall /
 
 # Create required folders
+# Remove content directory create when s6 is implemented
 RUN mkdir -p \
-        /var/cache/zoneminder/cache \
-        /var/cache/zoneminder/events \
-        /var/cache/zoneminder/images \
-        /var/cache/zoneminder/temp \
-        /var/lib/zm \
-        /var/log/zm \
+        /zoneminder/run \
+        /zoneminder/cache \
+        /zoneminder/content/events \
+        /zoneminder/content/images \
+        /zoneminder/tmp \
+        /log \
     && chown -R www-data:www-data \
-        /var/cache/zoneminder \
-        /var/lib/zm \
-        /var/log/zm \
+        /zoneminder \
+        /log \
     && chmod -R 755 \
-        /var/cache/zoneminder \
-        /var/lib/zm \
-        /var/log/zm
+        /zoneminder \
+        /log
+
+# Hide index.html
+RUN rm /var/www/html/index.html
 
 # Copy rootfs
 COPY root /

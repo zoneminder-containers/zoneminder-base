@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+# ==============================================================================
+# ZoneMinder
+# Runs ZoneMinder
+# ==============================================================================
+
+echo "Starting ZoneMinder..."
+exec /usr/bin/zmpkg.pl start

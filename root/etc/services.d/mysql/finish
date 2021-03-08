@@ -1,0 +1,7 @@
+#!/usr/bin/execlineb -S0
+# ==============================================================================
+# MySQL
+# Take down the S6 supervision tree when MariaDB fails to start/crashes
+# ==============================================================================
+
+s6-svscanctl -t /var/run/s6/services
