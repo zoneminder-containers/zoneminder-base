@@ -54,7 +54,7 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         $(grep -vE "^\s*#" /zmbuild/build.txt  | tr "\n" " ")
 
 RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
-    && cmake \
+    cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_SKIP_RPATH=ON \
         -DCMAKE_VERBOSE_MAKEFILE=OFF \
