@@ -35,9 +35,9 @@ jobs:
         with:
           install: true
 
+      # Temporarily set version
       - name: Gather Dependencies
         run: |
-        # Temporarily set version
           echo "zm_version=master" >> $GITHUB_ENV
           wget -O ./control.txt https://raw.githubusercontent.com/ZoneMinder/zoneminder/${{ zm_version }}/distros/ubuntu2004/control
           python3 -u parse.py
