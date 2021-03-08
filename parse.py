@@ -106,6 +106,8 @@ preferred_alternative = [
     "mariadb-client",
     "php-apcu-bc",
     "rsyslog",
+    "libjpeg62-turbo-dev",
+    "default-libmysqlclient-dev",
 ]
 
 control_pkg = get_value(load_control()[0], "Depends")
