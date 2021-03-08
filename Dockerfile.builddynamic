@@ -8,6 +8,8 @@ RUN apk add \
         git \
     && git clone --recursive -b ${ZM_VERSION} https://github.com/ZoneMinder/zoneminder.git .
 
+COPY parse.py .
+
 # This parses the control file located at distros/ubuntu2004/control
 # It outputs runtime.txt and build.txt with all the dependencies to be
 # apt-get installed
