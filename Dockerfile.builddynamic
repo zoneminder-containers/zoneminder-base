@@ -1,5 +1,18 @@
 # syntax=docker/dockerfile:experimental
 ARG ZM_VERSION=master
+FROM python:alpine as zm-source
+ARG ZM_VERSION
+WORKDIR /zmsource
+
+RUN apk add \
+        git \
+    && git clone --recursive -b ${ZM_VERSION} https://github.com/ZoneMinder/zoneminder.git .
+
+# This parses the control file located at distros/ubuntu2004/control
+# It outputs runtime.txt and build.txt with all the dependencies to be
+# apt-get installed
+RUN python3 -u parse.py
+
 FROM debian:buster as base-image
 
 RUN set -x \
@@ -13,19 +26,16 @@ RUN set -x \
 RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
     && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
 
-# TODO: don't permanently copy deps
-COPY runtime.txt .
-
 # Install ZM Dependencies
 # https://github.com/ZoneMinder/zoneminder/blob/8ebaee998aa6b1de0123753a0df86b240235fa33/distros/ubuntu2004/control#L42
-# Todo directly install deps using mk-build-deps/find some way to directly parse the control file
-RUN apt-get update \
+RUN --mount=type=bind,target=/zmsource,source=/zmsource,from=zm-source,rw \
+    apt-get update \
     && apt-get install -y \
-        $(grep -vE "^\s*#" runtime.txt  | tr "\n" " ") \
+        $(grep -vE "^\s*#" /zmsource/runtime.txt  | tr "\n" " ") \
     && rm -rf /var/lib/apt/lists/*
 
 FROM base-image as builder
-ARG ZM_VERSION
+WORKDIR /zmbuild
 
 # Skip interactive post-install scripts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -33,19 +43,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install base toolset
 RUN apt-get update \
     && apt-get install -y \
-        git \
         build-essential
 
-# TODO: don't permanently copy deps
-COPY build.txt .
-
-# Install Deps
-RUN apt-get update \
+# Install Build Dependencies
+RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
+    apt-get update \
     && apt-get install -y \
-        $(grep -vE "^\s*#" build.txt  | tr "\n" " ")
+        $(grep -vE "^\s*#" /zmbuild/build.txt  | tr "\n" " ")
 
-WORKDIR /zmbuild
-RUN git clone --recursive -b ${ZM_VERSION} https://github.com/ZoneMinder/zoneminder.git . \
+RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
     && cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_SKIP_RPATH=ON \
@@ -69,6 +75,7 @@ RUN git clone --recursive -b ${ZM_VERSION} https://github.com/ZoneMinder/zonemin
     && make DESTDIR="/zminstall" install
 
 FROM base-image as final-build
+ARG ZM_VERSION
 
 # Install additional services required by ZM
 RUN apt-get update \
@@ -109,4 +116,8 @@ RUN a2enconf zoneminder \
 
 # Configure entrypoint
 COPY --chmod=755 entrypoint.sh /usr/local/bin/
+
+LABEL \
+    org.opencontainers.image.version=${ZM_VERSION}
+
 CMD ["/usr/local/bin/entrypoint.sh"]

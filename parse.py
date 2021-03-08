@@ -2,9 +2,13 @@ import re
 from typing import Optional, List, Pattern, Tuple
 
 
+class AlternativeNotDefined(Exception):
+    pass
+
+
 def load_control() -> List[Optional[str]]:
     control_programs = []
-    with open("control.txt", "r") as file_obj:
+    with open("distros/ubuntu2004/control", "r") as file_obj:
         program = ""
         pkg_found = False
         for line in file_obj:
@@ -35,7 +39,7 @@ def get_alternatives(pkg_list: list, preferred_alternative: list = None) -> Tupl
                         found = True
                         alternatives.append([pkg])
             if not found:
-                alternatives.append(pkgs)
+                raise AlternativeNotDefined(f"Alternative for pkgs not found: {dep}")
         else:
             standard_packages.append(dep)
     return standard_packages, alternatives
@@ -99,6 +103,7 @@ def flatten_list(input_list: list) -> list:
         for value in inner_list:
             output.append(value)
     return output
+
 
 preferred_alternative = [
     "liblivemedia64",

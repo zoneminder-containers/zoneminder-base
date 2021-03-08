@@ -38,11 +38,6 @@ jobs:
         with:
           install: true
 
-      - name: Gather Dependencies
-        run: |
-          wget -O ./control.txt https://raw.githubusercontent.com/ZoneMinder/zoneminder/${{ env.ZM_VERSION }}/distros/ubuntu2004/control
-          python3 -u parse.py
-
       # label version as branch-run_number
       - name: Build Branch
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
@@ -50,7 +45,6 @@ jobs:
           set -x
           docker build \
             --build-arg ZM_VERSION=${{ env.ZM_VERSION }} \
-            --build-arg BUILD_VERSION=${GITHUB_REF##*/}-${{ github.run_number }} \
             --tag ci:${{ github.run_number }} \
             --platform ${{ matrix.arch }} \
             --progress plain \
