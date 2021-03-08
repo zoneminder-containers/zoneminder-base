@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build Docker Image
+    # Temporarily set version
+    env:
+      ZM_VERSION: master
     strategy:
       matrix:
         include:
@@ -35,12 +38,9 @@ jobs:
         with:
           install: true
 
-      # Temporarily set version
       - name: Gather Dependencies
         run: |
-          export ZM_VERSION="master
-          echo "ZM_VERSION=${ZM_VERSION}" >> $GITHUB_ENV
-          wget -O ./control.txt https://raw.githubusercontent.com/ZoneMinder/zoneminder/${{ ZM_VERSION }}/distros/ubuntu2004/control
+          wget -O ./control.txt https://raw.githubusercontent.com/ZoneMinder/zoneminder/${{ env.ZM_VERSION }}/distros/ubuntu2004/control
           python3 -u parse.py
 
       # label version as branch-run_number
@@ -49,7 +49,7 @@ jobs:
         run: |
           set -x
           docker build \
-            --build-arg ZM_VERSION=${{ ZM_VERSION }} \
+            --build-arg ZM_VERSION=${{ env.ZM_VERSION }} \
             --build-arg BUILD_VERSION=${GITHUB_REF##*/}-${{ github.run_number }} \
             --tag ci:${{ github.run_number }} \
             --platform ${{ matrix.arch }} \
