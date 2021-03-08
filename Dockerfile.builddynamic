@@ -2,7 +2,8 @@
 ARG ZM_VERSION=master
 FROM debian:buster as base-image
 
-RUN apt-get update \
+RUN set -x \
+    && apt-get update \
     && apt-get install -y \
         gnupg \
         wget \
