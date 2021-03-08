@@ -93,7 +93,6 @@ RUN adduser www-data video
 
 # Install ZM
 COPY --chown=www-data --chmod=755 --from=builder /zminstall /
-COPY --chown=www-data --chmod=755 --from=builder /zmbuild/distros/ubuntu2004/conf/apache2/zoneminder.conf /etc/apache2/conf-available/
 
 # Create required folders
 RUN mkdir -p \
@@ -111,6 +110,9 @@ RUN mkdir -p \
         /var/cache/zoneminder \
         /var/lib/zm \
         /var/log/zm
+
+# Copy rootfs
+COPY root /
 
 # Reconfigure apache
 RUN a2enconf zoneminder \
