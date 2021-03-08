@@ -30,10 +30,10 @@ RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 bu
 
 # Install ZM Dependencies
 # https://github.com/ZoneMinder/zoneminder/blob/8ebaee998aa6b1de0123753a0df86b240235fa33/distros/ubuntu2004/control#L42
-RUN --mount=type=bind,target=/zmsource,source=/zmsource,from=zm-source,rw \
+RUN --mount=type=bind,target=/tmp/runtime.txt,source=/zmsource/runtime.txt,from=zm-source,rw \
     apt-get update \
     && apt-get install -y \
-        $(grep -vE "^\s*#" /zmsource/runtime.txt  | tr "\n" " ") \
+        $(grep -vE "^\s*#" /tmp/runtime.txt  | tr "\n" " ") \
     && rm -rf /var/lib/apt/lists/*
 
 FROM base-image as builder
@@ -48,10 +48,10 @@ RUN apt-get update \
         build-essential
 
 # Install Build Dependencies
-RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
+RUN --mount=type=bind,target=/tmp/build.txt,source=/zmsource/build.txt,from=zm-source,rw \
     apt-get update \
     && apt-get install -y \
-        $(grep -vE "^\s*#" /zmbuild/build.txt  | tr "\n" " ")
+        $(grep -vE "^\s*#" /tmp/build.txt  | tr "\n" " ")
 
 RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
     cmake \
