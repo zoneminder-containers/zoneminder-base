@@ -26,7 +26,6 @@ RUN apt-get update \
 
 FROM base-image as builder
 ARG ZM_VERSION
-WORKDIR /zmbuild
 
 # Skip interactive post-install scripts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -45,6 +44,7 @@ RUN apt-get update \
     && apt-get install -y \
         $(grep -vE "^\s*#" build.txt  | tr "\n" " ")
 
+WORKDIR /zmbuild
 RUN git clone --recursive -b ${ZM_VERSION} https://github.com/ZoneMinder/zoneminder.git . \
     && cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
