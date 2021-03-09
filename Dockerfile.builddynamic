@@ -20,6 +20,7 @@ FROM debian:buster as base-image
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
+        ca-certificates \
         gnupg \
         wget \
     && rm -rf /var/lib/apt/lists/*
