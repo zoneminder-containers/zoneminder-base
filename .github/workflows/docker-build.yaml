@@ -2,14 +2,8 @@ name: Docker Build
 
 on:
   push:
-    branches:
-      - master
-    tags:
-      - '*'
   schedule:
     - cron: '0 0 * * *'
-  release:
-    types: [published, prereleased]
 
 jobs:
   build:

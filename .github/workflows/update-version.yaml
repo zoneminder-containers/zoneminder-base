@@ -2,7 +2,8 @@ name: Update ZoneMinder Version
 
 on:
   push:
-    branches: [master]
+    branches:
+      - 'master'
   schedule:
     - cron: '0 0 * * *'
 
