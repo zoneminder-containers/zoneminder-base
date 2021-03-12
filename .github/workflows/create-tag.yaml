@@ -1,0 +1,28 @@
+name: Create Tag from Version File
+
+on:
+  push:
+    paths:
+      - 'latest_version.txt'
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Update swversion
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get Version
+        id: getversion
+        run: |
+          set -x
+          export VERSION=`cat latest_version.txt`
+          echo "::set-output name=version::${VERSION}"
+      - name: Push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.3
+        with:
+          custom_tag: ${{ steps.getversion.outputs.version }}
+          tag_prefix: ''
+          github_token: ${{ secrets.GITHUB_TOKEN }}
