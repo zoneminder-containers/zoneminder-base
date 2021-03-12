@@ -1,7 +1,6 @@
 name: Update ZoneMinder Version
 
 on:
-  push:
   schedule:
     - cron: '0 0 * * *'
 
