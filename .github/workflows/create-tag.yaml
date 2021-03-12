@@ -2,8 +2,8 @@ name: Create Tag from Version File
 
 on:
   push:
-    branches:
-      - 'master'
+#    branches:
+#      - 'master'
     paths:
       - 'latest_version.txt'
 
