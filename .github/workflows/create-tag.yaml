@@ -26,12 +26,5 @@ jobs:
         with:
           custom_tag: ${{ steps.getversion.outputs.version }}
           tag_prefix: ''
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          name: ${{ steps.getversion.outputs.version }}
-          tag_name: ${{ steps.getversion.outputs.version }}
-          draft: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Custom PAT required to trigger build workflow
+          github_token: ${{ secrets.GHCR_PAT }}
