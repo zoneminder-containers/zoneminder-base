@@ -4,6 +4,8 @@ on:
   push:
   schedule:
     - cron: '0 0 * * *'
+  release:
+    types: [published, prereleased]
 
 jobs:
   build:
