@@ -28,7 +28,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-            commit-message: Update ZoneMinder version to ${{ steps.swversionupdate.outputs.version }}
+            committer: GitHub <noreply@github.com>
+            author: noreply@github.com
+            commit-message: Update ZoneMinder version to ${{ steps.update.outputs.version }}
             branch: action/update-zmversion
             delete-branch: true
             title: Bump version to ${{ steps.update.outputs.version }}
