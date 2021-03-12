@@ -1,4 +1,5 @@
 import re
+from os import path
 from typing import Optional, List, Pattern, Tuple
 
 
@@ -8,7 +9,11 @@ class AlternativeNotDefined(Exception):
 
 def load_control() -> List[Optional[str]]:
     control_programs = []
-    with open("distros/ubuntu2004/control", "r") as file_obj:
+    if path.isfile("distros/ubuntu2004/control"):
+        control_location = "distros/ubuntu2004/control"
+    else:
+        control_location = "distros/ubuntu1604/control"
+    with open(control_location, "r") as file_obj:
         program = ""
         pkg_found = False
         for line in file_obj:
@@ -113,6 +118,18 @@ preferred_alternative = [
     "rsyslog",
     "libjpeg62-turbo-dev",
     "default-libmysqlclient-dev",
+    "ffmpeg",
+    "libssl1.1",
+    "libswresample3",
+    "libswscale5",
+    "libx264-155",
+    "php-json",
+    "php-apcu",
+    "php-gd",
+    "php-mysql",
+    "libgcrypt-dev",
+    "libswresample-dev",
+    "python-sphinx",
 ]
 
 control_pkg = get_value(load_control()[0], "Depends")
