@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build Docker Image
-    # Set version to master for nightly
+    # Set version to master for nightly builds
     env:
       ZM_VERSION: master
     strategy:
@@ -17,14 +17,19 @@ jobs:
         include:
           - arch: linux/386
             arch_friendly: i386
+            s6_arch: x86
           - arch: linux/amd64
             arch_friendly: amd64
+            s6_arch: amd64
           - arch: linux/arm/v6
             arch_friendly: armv6
+            s6_arch: arm
           - arch: linux/arm/v7
             arch_friendly: armv7
+            s6_arch: armhf
           - arch: linux/arm64
             arch_friendly: arm64
+            s6_arch: aarch64
 
     steps:
       - name: Checkout
@@ -97,7 +102,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [ i386, amd64, armv6, armv7, arm64 ]
+        arch:
+          - i386
+          - amd64
+          - armv6
+          - armv7
+          - arm64
         registry:
           - {
             url: "https://index.docker.io/v1/",

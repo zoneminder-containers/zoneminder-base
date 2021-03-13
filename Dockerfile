@@ -1,5 +1,12 @@
 # syntax=docker/dockerfile:experimental
 ARG ZM_VERSION=master
+ARG S6_ARCH=amd64
+#####################################################################
+#                                                                   #
+# Download Zoneminder Source Code                                   #
+# Parse control file for all runtime and build dependencies         #
+#                                                                   #
+#####################################################################
 FROM python:alpine as zm-source
 ARG ZM_VERSION
 WORKDIR /zmsource
@@ -14,6 +21,29 @@ COPY parse.py .
 # It outputs runtime.txt and build.txt with all the dependencies to be
 # apt-get installed
 RUN python3 -u parse.py
+
+#####################################################################
+#                                                                   #
+# Download and extract s6 overlay                                   #
+#                                                                   #
+#####################################################################
+FROM alpine:latest as s6downloader
+# Required to persist build arg
+ARG S6_ARCH
+WORKDIR /s6downloader
+
+RUN set -x \
+    && OVERLAY_VERSION=$(wget --no-check-certificate -qO - https://api.github.com/repos/just-containers/s6-overlay/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') \
+    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${S6_ARCH}.tar.gz" \
+    && mkdir -p /tmp/s6 \
+    && tar zxvf /tmp/s6-overlay.tar.gz -C /tmp/s6 \
+    && mv /tmp/s6/* .
+
+#####################################################################
+#                                                                   #
+# Install base dependencies                                         #
+#                                                                   #
+#####################################################################
 
 FROM debian:buster as base-image
 
@@ -36,6 +66,12 @@ RUN --mount=type=bind,target=/tmp/runtime.txt,source=/zmsource/runtime.txt,from=
     && apt-get install -y --no-install-recommends \
         $(grep -vE "^\s*#" /tmp/runtime.txt  | tr "\n" " ") \
     && rm -rf /var/lib/apt/lists/*
+
+#####################################################################
+#                                                                   #
+# Install build dependencies and build ZoneMinder                   #
+#                                                                   #
+#####################################################################
 
 FROM base-image as builder
 WORKDIR /zmbuild
@@ -77,6 +113,14 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
     && make \
     && make DESTDIR="/zminstall" install
 
+#####################################################################
+#                                                                   #
+# Install ZoneMinder                                                #
+# Create required folders                                           #
+# Install additional dependencies                                   #
+#                                                                   #
+#####################################################################
+
 FROM base-image as final-build
 ARG ZM_VERSION
 
@@ -96,6 +140,9 @@ RUN adduser www-data video
 
 # Install ZM
 COPY --chown=www-data --chmod=755 --from=builder /zminstall /
+
+# Install s6 overlay
+COPY --from=s6downloader /s6downloader /
 
 # Create required folders
 # Remove content directory create when s6 is implemented
