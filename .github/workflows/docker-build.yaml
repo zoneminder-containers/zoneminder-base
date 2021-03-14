@@ -104,10 +104,10 @@ jobs:
             repo: yaoa/zoneminder-base
           }
           - {
-            url: ghcr.io/zoneminder-addons,
+            url: ghcr.io/zoneminder-containers,
             username: GCHR_USERNAME,
             password: GHCR_PAT,
-            repo: ghcr.io/zoneminder-addons/zoneminder-base
+            repo: ghcr.io/zoneminder-containers/zoneminder-base
           }
     steps:
       - name: Download container artifact
@@ -199,10 +199,10 @@ jobs:
             repo: yaoa/zoneminder-base
           }
           - {
-            url: ghcr.io/zoneminder-addons,
+            url: ghcr.io/zoneminder-containers,
             username: GCHR_USERNAME,
             password: GHCR_PAT,
-            repo: ghcr.io/zoneminder-addons/zoneminder-base
+            repo: ghcr.io/zoneminder-containers/zoneminder-base
           }
     steps:
       - name: Enable Experimental Docker Features
