@@ -9,14 +9,15 @@ fi
 
 ln -sf /config /zoneminder/config
 
-if [ ! -d "/data" ]; then
+if [ ! -d "/data/events" ]; then
   echo "Configuring ZoneMinder Data folder for First Run"
   mkdir -p \
     /data/events \
     /data/images
 fi
 
-ln -sf /data /zoneminder/content
+ln -sf /data/events /zoneminder/content/events
+ln -sf /data/images /zoneminder/content/images
 
 ## Configure ZoneMinder DB
 sed -i "s/ZM_DB_USER=.*$/ZM_DB_USER=$MYSQL_USER/g" /zoneminder/config/zm.conf

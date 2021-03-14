@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-ARG ZM_VERSION=95fe689d58eceaf164009a1578b3ead6bd65b75b
+ARG ZM_VERSION=f4cb4ec5b3d9859d166eabc808cb1a7abdb33f64
 ARG S6_ARCH=amd64
 #####################################################################
 #                                                                   #
@@ -129,6 +129,8 @@ FROM base-image as final-build
 ARG ZM_VERSION
 
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+ENV APACHE_RUN_USER=abc
+ENV APACHE_RUN_GROUP=abc
 
 # Install additional services required by ZM
 # Remove file install after switch to s6
@@ -157,6 +159,7 @@ COPY --from=s6downloader /s6downloader /
 RUN mkdir -p \
         /zoneminder/run \
         /zoneminder/cache \
+        /zoneminder/content \
         /zoneminder/tmp \
         /log \
     && chown -R abc:abc \

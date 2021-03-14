@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 function zm_db_exists() {
-    mysqlshow -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm config
+    mysqlshow -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm config > /dev/null 2>&1
     RETVAL=$?
     if [ "$RETVAL" = "0" ]; then
         return # ZoneMinder database exists
