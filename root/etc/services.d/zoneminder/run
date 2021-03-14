@@ -10,10 +10,4 @@
 echo "Starting ZoneMinder..."
 s6-setuidgid www-data /usr/bin/zmpkg.pl start
 
-exec \
-	s6-setuidgid www-data tail -F -q --pid="$(cat /zoneminder/run/zm.pid)" \
-	"$(find /var/log/apache2/error.log -printf '%C@ %p\n' |sort | head -n 2)"
-#while true
-#do
-#  sleep 2
-#done
+exec s6-setuidgid www-data tail -F -q --pid="$(cat /zoneminder/run/zm.pid)"
