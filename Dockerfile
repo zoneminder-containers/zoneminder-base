@@ -11,9 +11,11 @@ FROM python:alpine as zm-source
 ARG ZM_VERSION
 WORKDIR /zmsource
 
-RUN wget -O /tmp/zmsource.tar.gz "https://github.com/ZoneMinder/zoneminder/archive/${ZM_VERSION}.tar.gz" \
-    && mkdir -p /tmp/zmsource \
-    && tar zxvf /tmp/zmsource.tar.gz --strip 1 -C .
+RUN apk add \
+        git \
+    && git clone https://github.com/ZoneMinder/zoneminder.git . \
+    && git checkout ${ZM_VERSION} \
+    && git submodule update --init --recursive
 
 COPY parse.py .
 
@@ -83,10 +85,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential
 
+# Install libjwt since its an optional dep not included in the control file
+RUN apt-get install -y --no-install-recommends \
+        libjwt-dev
+
 # Install Build Dependencies
 RUN --mount=type=bind,target=/tmp/build.txt,source=/zmsource/build.txt,from=zm-source,rw \
-    apt-get update \
-    && apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
         $(grep -vE "^\s*#" /tmp/build.txt  | tr "\n" " ")
 
 RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
