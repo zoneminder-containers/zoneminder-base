@@ -12,9 +12,9 @@ function zm_db_exists() {
 mysqladmin ping --connect-timeout 5 -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb > /dev/null 2>&1
 result="$?"
 if [ "$result" -eq "0" ]; then
-    echo "Mariadb has started. Proceeding..."
+    echo "[Mariadb] Mariadb has started. Proceeding..."
     if ! zm_db_exists; then
-        echo "Creating ZoneMinder db for first run"
+        echo "[Mariadb] Creating ZoneMinder db for first run"
         mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb < /usr/share/zoneminder/db/zm_create.sql
     fi
     exit # mysql is running

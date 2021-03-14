@@ -4,7 +4,7 @@
 # Runs Apache2
 # ==============================================================================
 
-echo "Starting Apache2..."
+echo "[Apache2] Starting Apache2..."
 
 source /etc/apache2/envvars
-/usr/sbin/apache2ctl -D FOREGROUND
+/usr/sbin/apache2ctl -D FOREGROUND | sed -u "s/^/[Apache2] /"
