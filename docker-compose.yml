@@ -8,7 +8,9 @@ services:
     networks:
       - zoneminder
     volumes:
-      - ./db:/var/lib/mysql
+      - ./zm/db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=zm
     env_file:
       - ./.env
 
@@ -16,16 +18,14 @@ services:
     container_name: zoneminder
     image: ghcr.io/zoneminder-addons/zoneminder-base
     restart: always
-    depends_on:
-      - db
     ports:
       - 80:80
     networks:
       - zoneminder
     volumes:
-      - ./data:/data
-      - ./config:/config
-      - ./log:/log
+      - ./zm/data:/data
+      - ./zm/config:/config
+      - ./zm/log:/log
     env_file:
       - ./.env
 

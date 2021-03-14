@@ -1,9 +1,7 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/execlineb -S0
 # ==============================================================================
-# Apache2
-# Runs Apache2
+# Mariadb
+# Take down the S6 supervision tree if db is no longer accessible
 # ==============================================================================
 
-echo "Starting Apache2..."
-source /etc/apache2/envvars
-exec /usr/sbin/apache2ctl -D FOREGROUND
+s6-svscanctl -t /var/run/s6/services

@@ -1,4 +1,4 @@
-#!/usr/bin/execlineb -S0
+#!/usr/bin/with-contenv bash
 # ==============================================================================
 # Apache2
 # Tell Apache2 to stop when container stops

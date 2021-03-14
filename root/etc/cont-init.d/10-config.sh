@@ -19,9 +19,10 @@ fi
 ln -sf /data /zoneminder/content
 
 ## Configure ZoneMinder DB
-sed -i "s/ZM_DB_NAME=.*$/ZM_DB_NAME=$MYSQL_DATABASE/g" /zoneminder/config/zm.conf
 sed -i "s/ZM_DB_USER=.*$/ZM_DB_USER=$MYSQL_USER/g" /zoneminder/config/zm.conf
 sed -i "s/ZM_DB_PASS=.*$/ZM_DB_PASS=$MYSQL_PASSWORD/g" /zoneminder/config/zm.conf
+# These cannot be changed
+sed -i "s/ZM_DB_NAME=.*$/ZM_DB_NAME=zm/g" /zoneminder/config/zm.conf
 sed -i "s/ZM_DB_HOST=.*$/ZM_DB_HOST=db/g" /zoneminder/config/zm.conf
 
 ## Configure Timezone

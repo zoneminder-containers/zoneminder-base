@@ -1,0 +1,21 @@
+#!/usr/bin/with-contenv bash
+# ==============================================================================
+# Mariadb
+# Stub service to wait until db is ready
+# ==============================================================================
+
+s6-notifyoncheck -n 1000 echo "Waiting for Mariadb to start"
+
+# Wait until db is initially ready before polling
+/bin/s6-svwait -U /var/run/s6/services/mariadb
+# Need to sleep to act like service is running
+# Terminate container if db dies
+while true
+do
+  mysqladmin ping --connect-timeout 5 -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb > /dev/null 2>&1
+  result="$?"
+  if [ "$result" -ne "0" ]; then
+      exit 1 # mysql is not running
+  fi
+  sleep 2
+done

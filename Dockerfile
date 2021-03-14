@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-ARG ZM_VERSION=master
+ARG ZM_VERSION=95fe689d58eceaf164009a1578b3ead6bd65b75b
 ARG S6_ARCH=amd64
 #####################################################################
 #                                                                   #
@@ -11,9 +11,9 @@ FROM python:alpine as zm-source
 ARG ZM_VERSION
 WORKDIR /zmsource
 
-RUN apk add \
-        git \
-    && git clone --recursive -b ${ZM_VERSION} https://github.com/ZoneMinder/zoneminder.git .
+RUN wget -O /tmp/zmsource.tar.gz "https://github.com/ZoneMinder/zoneminder/archive/${ZM_VERSION}.tar.gz" \
+    && mkdir -p /tmp/zmsource \
+    && tar zxvf /tmp/zmsource.tar.gz --strip 1 -C .
 
 COPY parse.py .
 
@@ -33,8 +33,7 @@ ARG S6_ARCH
 WORKDIR /s6downloader
 
 RUN set -x \
-    && OVERLAY_VERSION=$(wget --no-check-certificate -qO - https://api.github.com/repos/just-containers/s6-overlay/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') \
-    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${S6_ARCH}.tar.gz" \
+    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/latest/download/s6-overlay-${S6_ARCH}.tar.gz" \
     && mkdir -p /tmp/s6 \
     && tar zxvf /tmp/s6-overlay.tar.gz -C /tmp/s6 \
     && mv /tmp/s6/* .
@@ -171,6 +170,10 @@ COPY root /
 # Reconfigure apache
 RUN a2enconf zoneminder \
     && a2enmod rewrite
+
+# Redirect apache logs to stdout
+RUN ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
+    ln -sf /proc/self/fd/1 /var/log/apache2/error.log
 
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}
