@@ -1,0 +1,17 @@
+#!/usr/bin/with-contenv bash
+# ==============================================================================
+# Mariadb
+# Stub service to monitor db status
+# ==============================================================================
+
+/bin/s6-svwait -U /var/run/s6/services/mariadb
+
+if ! (mysqlshow -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm config > /dev/null 2>&1); then
+    echo "[Mariadb] Creating ZoneMinder db for first run"
+    mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb < /usr/share/zoneminder/db/zm_create.sql
+fi
+
+# Notify s6 service is up
+fdmove 1 3 printf "done\n"
+
+exec s6-pause -th
