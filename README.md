@@ -8,13 +8,15 @@ This will be an AIO container running all services required by Zoneminder in a s
 
 
 TODO:
-- Automatically tag and release new ZM versions
-  - PR file? Auto tag then build?
-- Implement s6 overlay
+- Get finish scripts to output logs properly
+- Go back to internal mariadb instead of external container?
 - Install ZM Event Server
-- Fix ZM install/file directories (set to unified mount dir)
   
 DONE:
+- ~~Fix ZM install/file directories (set to unified mount dir)~~
+- ~~Implement s6 overlay~~
+- ~~Automatically tag and release new ZM versions~~
+  - ~~PR file? Auto tag then build?~~
 - ~~Implement CI/CD~~
 - ~~Find way to parse control file to dynamically install deps (Need to install both Depends and Recommends)~~
     - ~~Consider writing python script to parse control file and output commands to a bash script~~

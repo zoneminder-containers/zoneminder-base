@@ -117,7 +117,7 @@ jobs:
 
       - name: Import image
         run: |
-          docker load --input ci-${{ matrix.arch }}-${{ github.run_number }}
+          docker load --input ci-${{ matrix.arch }}-${{ github.run_number }}.tar.gz
 
       - name: Docker login
         run: |

@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-echo "Stopping Apache2"
+echo "[Apache2] Stopping Apache2"
+# TODO: Figure out why these logs aren't coming through
 exec /usr/sbin/apachectl -k graceful-stop
