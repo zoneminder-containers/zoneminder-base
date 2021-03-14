@@ -11,7 +11,8 @@ FROM python:alpine as zm-source
 ARG ZM_VERSION
 WORKDIR /zmsource
 
-RUN apk add \
+RUN set -x \
+    && apk add \
         git \
     && git clone https://github.com/ZoneMinder/zoneminder.git . \
     && git checkout ${ZM_VERSION} \
@@ -22,7 +23,8 @@ COPY parse.py .
 # This parses the control file located at distros/ubuntu2004/control
 # It outputs runtime.txt and build.txt with all the dependencies to be
 # apt-get installed
-RUN python3 -u parse.py
+RUN set -x \
+    && python3 -u parse.py
 
 #####################################################################
 #                                                                   #
@@ -57,13 +59,15 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 # Required for libmp4v2-dev
-RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
+RUN set -x \
+    && echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
     && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
 
 # Install ZM Dependencies
 # https://github.com/ZoneMinder/zoneminder/blob/8ebaee998aa6b1de0123753a0df86b240235fa33/distros/ubuntu2004/control#L42
 RUN --mount=type=bind,target=/tmp/runtime.txt,source=/zmsource/runtime.txt,from=zm-source,rw \
-    apt-get update \
+    set -x \
+    && apt-get update \
     && apt-get install -y \
         $(grep -vE "^\s*#" /tmp/runtime.txt  | tr "\n" " ") \
     && rm -rf /var/lib/apt/lists/*
@@ -81,21 +85,25 @@ WORKDIR /zmbuild
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install base toolset
-RUN apt-get update \
+RUN set -x \
+    && apt-get update \
     && apt-get install -y \
         build-essential
 
 # Install libjwt since its an optional dep not included in the control file
-RUN apt-get install -y \
+RUN set -x \
+    && apt-get install -y \
         libjwt-dev
 
 # Install Build Dependencies
 RUN --mount=type=bind,target=/tmp/build.txt,source=/zmsource/build.txt,from=zm-source,rw \
-    apt-get install -y \
+    set -x \
+    && apt-get install -y \
         $(grep -vE "^\s*#" /tmp/build.txt  | tr "\n" " ")
 
 RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
-    cmake \
+    set -x \
+    && cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_SKIP_RPATH=ON \
         -DCMAKE_VERBOSE_MAKEFILE=OFF \
@@ -130,7 +138,8 @@ ARG ZM_VERSION
 
 # Install additional services required by ZM
 # PHP-fpm not required for apache
-RUN apt-get update \
+RUN set -x \
+    && apt-get update \
     && apt-get install -y \
         apache2 \
         libapache2-mod-php \
@@ -140,7 +149,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ## Create www-data user
-RUN groupmod -o -g 911 www-data \
+RUN set -x \
+    && groupmod -o -g 911 www-data \
     && usermod -o -u 911 www-data
 
 # Install ZM
@@ -151,7 +161,8 @@ COPY --from=s6downloader /s6downloader /
 
 # Create required folders
 # Remove content directory create when s6 is implemented
-RUN mkdir -p \
+RUN set -x \
+    && mkdir -p \
         /zoneminder/run \
         /zoneminder/cache \
         /zoneminder/content \
@@ -165,17 +176,20 @@ RUN mkdir -p \
         /log
 
 # Hide index.html
-RUN rm /var/www/html/index.html
+RUN set -x \
+    && rm /var/www/html/index.html
 
 # Copy rootfs
 COPY root /
 
 # Reconfigure apache
-RUN a2enconf zoneminder \
+RUN set -x \
+    && a2enconf zoneminder \
     && a2enmod rewrite
 
 # Redirect apache logs to stdout
-RUN ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
+RUN set -x \
+    && ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
     ln -sf /proc/self/fd/1 /var/log/apache2/error.log
 
 LABEL \
