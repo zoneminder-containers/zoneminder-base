@@ -1,9 +1,12 @@
 #!/usr/bin/with-contenv bash
 # ==============================================================================
-# ZoneMinder
-# Runs ZoneMinder
+# Apache2
+# Runs Apache2
 # ==============================================================================
 
-echo "Starting ZoneMinder..."
+/bin/s6-svwait -u /var/run/s6/services/zoneminder
+
+echo "Starting Apache2..."
+source /etc/apache2/envvars
 exec \
-  s6-setuidgid abc /usr/bin/zmpkg.pl start
+  s6-setuidgid abc /usr/sbin/apache2 -k start

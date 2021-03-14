@@ -1,8 +1,7 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/execlineb -S0
 # ==============================================================================
-# MySQL
-# Runs MariaDB (drop-in replacement for MySQL)
+# Apache2
+# Tell Apache2 to stop when container stops
 # ==============================================================================
 
-echo "Starting ZoneMinder..."
-exec /usr/bin/zmpkg.pl start
+exec /usr/sbin/apache2 -k stop

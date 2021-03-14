@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: mariadb
+    restart: always
+    networks:
+      - zoneminder
+    volumes:
+      - ./db:/var/lib/mysql
+    env_file:
+      - ./.env
+
+  zoneminder:
+    container_name: zoneminder
+    image: ghcr.io/zoneminder-addons/zoneminder-base
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    networks:
+      - zoneminder
+    volumes:
+      - ./zmcontent:/zoneminder/content/
+    env_file:
+      - ./.env
+
+
+networks:
+  zoneminder:

@@ -104,8 +104,8 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DZM_CONTENTDIR=/zoneminder/content \
         -DZM_CACHEDIR=/zoneminder/cache \
         -DZM_CGIDIR=/zoneminder/cgi-bin \
-        -DZM_WEB_USER=www-data \
-        -DZM_WEB_GROUP=www-data \
+        -DZM_WEB_USER=abc \
+        -DZM_WEB_GROUP=abc \
         -DCMAKE_INSTALL_SYSCONFDIR=config \
         -DZM_CONFIG_DIR=/zoneminder/config \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -124,6 +124,8 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
 FROM base-image as final-build
 ARG ZM_VERSION
 
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+
 # Install additional services required by ZM
 # Remove file install after switch to s6
 RUN apt-get update \
@@ -133,13 +135,15 @@ RUN apt-get update \
         libapache2-mod-php \
         mariadb-server \
         php-fpm \
+        tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-# Create users
-RUN adduser www-data video
+# Create abc user
+RUN useradd -u 911 -U -d /config -s /bin/false abc && \
+        usermod -G users abc
 
 # Install ZM
-COPY --chown=www-data --chmod=755 --from=builder /zminstall /
+COPY --chown=abc --chmod=755 --from=builder /zminstall /
 
 # Install s6 overlay
 COPY --from=s6downloader /s6downloader /
@@ -149,11 +153,9 @@ COPY --from=s6downloader /s6downloader /
 RUN mkdir -p \
         /zoneminder/run \
         /zoneminder/cache \
-        /zoneminder/content/events \
-        /zoneminder/content/images \
         /zoneminder/tmp \
         /log \
-    && chown -R www-data:www-data \
+    && chown -R abc:abc \
         /zoneminder \
         /log \
     && chmod -R 755 \
@@ -170,10 +172,7 @@ COPY root /
 RUN a2enconf zoneminder \
     && a2enmod rewrite
 
-# Configure entrypoint
-COPY --chmod=755 entrypoint.sh /usr/local/bin/
-
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}
 
-CMD ["/usr/local/bin/entrypoint.sh"]
+CMD ["/init"]
