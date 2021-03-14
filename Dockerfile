@@ -108,8 +108,8 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DZM_CONTENTDIR=/zoneminder/content \
         -DZM_CACHEDIR=/zoneminder/cache \
         -DZM_CGIDIR=/zoneminder/cgi-bin \
-        -DZM_WEB_USER=abc \
-        -DZM_WEB_GROUP=abc \
+        -DZM_WEB_USER=www-data \
+        -DZM_WEB_GROUP=www-data \
         -DCMAKE_INSTALL_SYSCONFDIR=config \
         -DZM_CONFIG_DIR=/zoneminder/config \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -129,8 +129,8 @@ FROM base-image as final-build
 ARG ZM_VERSION
 
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
-ENV APACHE_RUN_USER=abc
-ENV APACHE_RUN_GROUP=abc
+ENV APACHE_RUN_USER=www-data
+ENV APACHE_RUN_GROUP=www-data
 
 # Install additional services required by ZM
 # Remove file install after switch to s6
@@ -144,12 +144,11 @@ RUN apt-get update \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-# Create abc user
-RUN useradd -u 911 -U -d /config -s /bin/false abc && \
-        usermod -G users abc
+## Create www-data user
+#RUN adduser www-data
 
 # Install ZM
-COPY --chown=abc --chmod=755 --from=builder /zminstall /
+COPY --chown=www-data --chmod=755 --from=builder /zminstall /
 
 # Install s6 overlay
 COPY --from=s6downloader /s6downloader /
@@ -162,7 +161,7 @@ RUN mkdir -p \
         /zoneminder/content \
         /zoneminder/tmp \
         /log \
-    && chown -R abc:abc \
+    && chown -R www-data:www-data \
         /zoneminder \
         /log \
     && chmod -R 755 \

@@ -3,14 +3,13 @@
 PUID=${PUID:-911}
 PGID=${PGID:-911}
 
-groupmod -o -g "$PGID" abc
-usermod -o -u "$PUID" abc
+groupmod -o -g "$PGID" www-data
+usermod -o -u "$PUID" www-data
 
-echo "
-User uid:    $(id -u abc)
-User gid:    $(id -g abc)"
+echo "User uid:    $(id -u www-data)
+User gid:    $(id -g www-data)"
 
-chown -R abc:abc /config
-chown -R abc:abc /data
-chown -R abc:abc /log
-chown -R abc:abc /zoneminder
+chown -R www-data:www-data /config
+chown -R www-data:www-data /data
+chown -R www-data:www-data /log
+chown -R www-data:www-data /zoneminder
