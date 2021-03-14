@@ -23,7 +23,9 @@ services:
     networks:
       - zoneminder
     volumes:
-      - ./zmcontent:/zoneminder/content/
+      - ./data:/data
+      - ./config:/config
+      - ./log:/log
     env_file:
       - ./.env
 
