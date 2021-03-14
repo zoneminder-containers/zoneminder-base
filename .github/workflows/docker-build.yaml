@@ -32,6 +32,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         with:
+          driver-opts: |
+            BUILDKIT_STEP_LOG_MAX_SIZE=1000000
+            BUILDKIT_STEP_LOG_MAX_SPEED=100000000
           install: true
 
       # build nightly
