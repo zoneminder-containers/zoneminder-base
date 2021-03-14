@@ -128,10 +128,6 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
 FROM base-image as final-build
 ARG ZM_VERSION
 
-ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
-ENV APACHE_RUN_USER=www-data
-ENV APACHE_RUN_GROUP=www-data
-
 # Install additional services required by ZM
 # Remove file install after switch to s6
 RUN apt-get update \
@@ -145,7 +141,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ## Create www-data user
-#RUN adduser www-data
+RUN groupmod -o -g 911 www-data \
+    && usermod -o -u 911 www-data
 
 # Install ZM
 COPY --chown=www-data --chmod=755 --from=builder /zminstall /
@@ -184,5 +181,11 @@ RUN ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
 
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}
+
+ENV \
+    S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
+    APACHE_RUN_USER=www-data \
+    APACHE_RUN_GROUP=www-data \
+    S6_KILL_FINISH_MAXTIME=30000
 
 CMD ["/init"]

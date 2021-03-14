@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 # ==============================================================================
-# Mariadb
-# Take down the S6 supervision tree if db is no longer accessible
+# ZoneMinder
+# Configures Logging
 # ==============================================================================
 
-s6-svscanctl -t /var/run/s6/services
+sed -u "s/^/[ZoneMinder] /"

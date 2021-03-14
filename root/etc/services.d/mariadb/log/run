@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 # ==============================================================================
-# Apache2
-# Tell Apache2 to stop when container stops
+# Mariadb
+# Configures Logging
 # ==============================================================================
 
-exec /usr/sbin/apache2 -k stop
+sed -u "s/^/[Mariadb] /"

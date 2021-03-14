@@ -18,6 +18,7 @@ services:
     container_name: zoneminder
     image: ghcr.io/zoneminder-addons/zoneminder-base
     restart: always
+    stop_grace_period: 45s
     ports:
       - 80:80
     networks:

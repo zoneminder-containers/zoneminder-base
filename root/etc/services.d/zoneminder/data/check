@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+
+if [ "$(pgrep -fc /usr/bin/zm)" -gt "0" ]; then
+  exit
+fi
+exit 1

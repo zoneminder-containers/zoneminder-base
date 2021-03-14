@@ -8,6 +8,16 @@
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
 echo "Starting ZoneMinder..."
-s6-setuidgid www-data /usr/bin/zmpkg.pl start
+s6-notifyoncheck -n 1000 s6-setuidgid www-data /usr/bin/zmpkg.pl start
+tail -f /log/* &
 
-exec s6-setuidgid www-data tail -F -q --pid="$(cat /zoneminder/run/zm.pid)"
+# Wait until service is alive before polling
+/bin/s6-svwait -U /var/run/s6/services/zoneminder
+echo "ZoneMinder is up! Proceeding to monitoring."
+
+# Need to sleep to act like service is running
+# Terminate container if zm dies
+until [ "$(pgrep -fc /usr/bin/zm)" -lt "1" ]; do
+  sleep 1
+done
+echo "ZoneMinder has crashed! Exiting..."

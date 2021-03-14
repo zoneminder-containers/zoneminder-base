@@ -1,4 +1,4 @@
-#!/usr/bin/execlineb -S0
+#!/usr/bin/with-contenv bash
 # ==============================================================================
 # ZoneMinder
 # Take down the S6 supervision tree if db is no longer accessible
