@@ -50,7 +50,7 @@ FROM debian:buster as base-image
 
 RUN set -x \
     && apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && apt-get install -y \
         ca-certificates \
         gnupg \
         wget \
@@ -64,7 +64,7 @@ RUN echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 bu
 # https://github.com/ZoneMinder/zoneminder/blob/8ebaee998aa6b1de0123753a0df86b240235fa33/distros/ubuntu2004/control#L42
 RUN --mount=type=bind,target=/tmp/runtime.txt,source=/zmsource/runtime.txt,from=zm-source,rw \
     apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && apt-get install -y \
         $(grep -vE "^\s*#" /tmp/runtime.txt  | tr "\n" " ") \
     && rm -rf /var/lib/apt/lists/*
 
@@ -82,16 +82,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install base toolset
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && apt-get install -y \
         build-essential
 
 # Install libjwt since its an optional dep not included in the control file
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get install -y \
         libjwt-dev
 
 # Install Build Dependencies
 RUN --mount=type=bind,target=/tmp/build.txt,source=/zmsource/build.txt,from=zm-source,rw \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y \
         $(grep -vE "^\s*#" /tmp/build.txt  | tr "\n" " ")
 
 RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
@@ -129,11 +129,10 @@ FROM base-image as final-build
 ARG ZM_VERSION
 
 # Install additional services required by ZM
-# Remove file install after switch to s6
+# PHP-fpm not required for apache
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && apt-get install -y \
         apache2 \
-        file \
         libapache2-mod-php \
         mariadb-server \
         php-fpm \
