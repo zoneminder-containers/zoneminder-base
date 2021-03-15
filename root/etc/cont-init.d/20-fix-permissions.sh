@@ -12,4 +12,3 @@ User gid:    $(id -g www-data)"
 chown -R www-data:www-data /config
 chown -R www-data:www-data /data
 chown -R www-data:www-data /log
-chown -R www-data:www-data /zoneminder
