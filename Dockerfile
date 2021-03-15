@@ -159,7 +159,6 @@ RUN set -x \
     && apt-get install -y \
         apache2 \
         libapache2-mod-php \
-        mariadb-server \
         php-fpm \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
