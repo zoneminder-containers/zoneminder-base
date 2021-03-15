@@ -28,6 +28,22 @@ RUN set -x \
 
 #####################################################################
 #                                                                   #
+# Convert rootfs to LF using dos2unix                               #
+# Alleviates issues when git uses CRLF on Windows                   #
+#                                                                   #
+#####################################################################
+FROM python:alpine as rootfs-converter
+WORKDIR /rootfs
+
+RUN set -x \
+    && apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+        dos2unix
+
+COPY root .
+RUN find . -type f -print0 | xargs -0 -n 1 -P 4 dos2unix
+
+#####################################################################
+#                                                                   #
 # Download and extract s6 overlay                                   #
 #                                                                   #
 #####################################################################
@@ -153,12 +169,6 @@ RUN set -x \
     && groupmod -o -g 911 www-data \
     && usermod -o -u 911 www-data
 
-# Install ZM
-COPY --chown=www-data --chmod=755 --from=builder /zminstall /
-
-# Install s6 overlay
-COPY --from=s6downloader /s6downloader /
-
 # Create required folders
 # Remove content directory create when s6 is implemented
 RUN set -x \
@@ -179,8 +189,14 @@ RUN set -x \
 RUN set -x \
     && rm /var/www/html/index.html
 
+# Install ZM
+COPY --chown=www-data --chmod=755 --from=builder /zminstall /
+
+# Install s6 overlay
+COPY --from=s6downloader /s6downloader /
+
 # Copy rootfs
-COPY root /
+COPY --from=rootfs-converter /rootfs /
 
 # Reconfigure apache
 RUN set -x \
