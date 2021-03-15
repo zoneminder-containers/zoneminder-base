@@ -90,8 +90,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  publish:
+  test:
     needs: build
+    name: Test Image
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - i386
+          - amd64
+    steps:
+      - name: Download container artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ci-${{ matrix.arch }}-${{ github.run_number }}
+
+      - name: Import image
+        run: |
+          docker load --input ci-${{ matrix.arch }}-${{ github.run_number }}.tar.gz
+
+      - name: Run image
+        run: |
+          docker-compose up -d
+          sleep 60
+          docker stop zoneminder
+          docker-compose logs
+
+  publish:
+    needs: test
     name: Publish Image
     runs-on: ubuntu-latest
     strategy:
