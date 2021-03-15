@@ -14,4 +14,4 @@ fi
 # Notify s6 service is up
 fdmove 1 3 printf "done\n"
 
-exec s6-pause -th
+exec s6-pause
