@@ -18,7 +18,9 @@ services:
     container_name: zoneminder
     image: ci:latest
     # Disable automatic restarts so we know if container dies on startup
-    restart: never
+    deploy:
+      restart_policy:
+        condition: none
     stop_grace_period: 45s
     ports:
       - 80:80
