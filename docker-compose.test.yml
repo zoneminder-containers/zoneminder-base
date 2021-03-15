@@ -16,7 +16,7 @@ services:
 
   zoneminder:
     container_name: zoneminder
-    image: ghcr.io/zoneminder-containers/zoneminder-base
+    image: ci:latest
     # Disable automatic restarts so we know if container dies on startup
     restart: none
     stop_grace_period: 45s
