@@ -2,4 +2,4 @@
 
 echo "[ZoneMinder] Stopping ZoneMinder"
 # TODO: Figure out why these logs aren't coming through
-exec /usr/bin/zmpkg.pl stop
+exec s6-setuidgid www-data /usr/bin/zmpkg.pl stop
