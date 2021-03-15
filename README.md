@@ -8,11 +8,12 @@ This will be an AIO container running all services required by Zoneminder in a s
 
 
 TODO:
-- Get finish scripts to output logs properly
-- Go back to internal mariadb instead of external container?
+- Go back to internal mariadb instead of external container
+- Replace Apache2 with Nginx + php-fpm + php-fpm optimizations
 - Install ZM Event Server
   
 DONE:
+- ~~Get finish scripts to output logs properly~~
 - ~~Fix ZM install/file directories (set to unified mount dir)~~
 - ~~Implement s6 overlay~~
 - ~~Automatically tag and release new ZM versions~~
@@ -22,5 +23,4 @@ DONE:
     - ~~Consider writing python script to parse control file and output commands to a bash script~~
 
 Considerations:
-- Nginx
 - Alpine
