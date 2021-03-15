@@ -8,7 +8,7 @@ This will be an AIO container running all services required by Zoneminder in a s
 
 
 TODO:
-- Go back to internal mariadb instead of external container
+- ~~Go back to internal mariadb instead of external container~~ (will not do to support multi zoneminder servers)
 - Replace Apache2 with Nginx + php-fpm + php-fpm optimizations
 - Install ZM Event Server
   
