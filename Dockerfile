@@ -56,7 +56,13 @@ RUN set -x \
     && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/latest/download/s6-overlay-${S6_ARCH}.tar.gz" \
     && mkdir -p /tmp/s6 \
     && tar zxvf /tmp/s6-overlay.tar.gz -C /tmp/s6 \
-    && mv /tmp/s6/* .
+    && cp -r /tmp/s6/* .
+
+RUN set -x \
+    && wget -O /tmp/socklog-overlay.tar.gz "https://github.com/just-containers/socklog-overlay/releases/latest/download/socklog-overlay-${S6_ARCH}.tar.gz" \
+    && mkdir -p /tmp/socklog \
+    && tar zxvf /tmp/socklog-overlay.tar.gz -C /tmp/socklog \
+    && cp -r /tmp/socklog/* .
 
 #####################################################################
 #                                                                   #
@@ -127,7 +133,7 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DZM_RUNDIR=/zoneminder/run \
         -DZM_SOCKDIR=/zoneminder/run \
         -DZM_TMPDIR=/zoneminder/tmp \
-        -DZM_LOGDIR=/log \
+        -DZM_LOGDIR=/var/log/zm \
         -DZM_WEBDIR=/var/www/html \
         -DZM_CONTENTDIR=/data \
         -DZM_CACHEDIR=/zoneminder/cache \
@@ -185,11 +191,12 @@ RUN set -x \
         /data \
         /config \
         /zoneminder \
-        /log \
     && chmod -R 755 \
         /data \
         /config \
         /zoneminder \
+        /log \
+    && chown -R nobody:nogroup \
         /log
 
 # Hide index.html
@@ -219,9 +226,14 @@ LABEL \
     org.opencontainers.image.version=${ZM_VERSION}
 
 ENV \
+    S6_FIX_ATTRS_HIDDEN=1 \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     APACHE_RUN_USER=www-data \
     APACHE_RUN_GROUP=www-data \
-    S6_KILL_FINISH_MAXTIME=30000
+    S6_KILL_FINISH_MAXTIME=30000 \
+    S6_LOGGING_SCRIPT="1 n20 s1000000" \
+    SOCKLOG_TIMESTAMP_FORMAT="" \
+    MAX_LOG_SIZE_BYTES=1000000 \
+    MAX_LOG_NUMBER=10
 
 CMD ["/init"]

@@ -106,9 +106,15 @@ def flatten_list(input_list: list) -> list:
     output = []
     for inner_list in input_list:
         for value in inner_list:
+            if value in removed_dependencies:
+                continue
             output.append(value)
     return output
 
+
+removed_dependencies = [
+    "rsyslog"
+]
 
 preferred_alternative = [
     "liblivemedia64",

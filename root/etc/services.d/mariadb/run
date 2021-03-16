@@ -6,11 +6,11 @@ program_name="Mariadb"
 # Stub service to monitor db status
 # ==============================================================================
 
-s6-notifyoncheck -n 1000 info "${program_name}" "Waiting for Mariadb to start"
+s6-notifyoncheck -n 1000 echo "Waiting for Mariadb to start" | info "${program_name}"
 
 # Wait until db is initially ready before polling
 /bin/s6-svwait -U /var/run/s6/services/mariadb
-info "${program_name}" "Mariadb is up! Proceeding to monitoring."
+echo "Mariadb is up! Proceeding to monitoring." | info "${program_name}"
 
 # Need to sleep to act like service is running
 # Terminate container if db dies
@@ -18,4 +18,4 @@ until ! (mysqladmin ping --connect-timeout 5 -u"${MYSQL_USER}" -p"${MYSQL_PASSWO
   grep 'mysqld is alive' > /dev/null); do
   sleep 1
 done
-error "${program_name}" "Mariadb could not be reached! Exiting..."
+echo "Mariadb could not be reached! Exiting..." | error "${program_name}"

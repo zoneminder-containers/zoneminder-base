@@ -6,20 +6,28 @@ log() {
 
 # init service logtext
 init() {
-  log "[${1}] FIRSTRUN ${2}"
+  while read -r data_in; do
+    log "FIRSTRUN [${1}] ${data_in}"
+  done
 }
 
 # info service logtext
 info() {
-  log "[${1}] INFO ${2}"
+  while read -r data_in; do
+    log "INFO [${1}] ${data_in}"
+  done
 }
 
 # warn service logtext
 warn() {
-  log "[${1}] INFO ${2}"
+  while read -r data_in; do
+    log "WARN [${1}] ${data_in}"
+  done
 }
 
 # warn service logtext
 error() {
-  log "[${1}] ERROR ${2}"
+  while read -r data_in; do
+    log "ERROR [${1}] ${data_in}"
+  done
 }

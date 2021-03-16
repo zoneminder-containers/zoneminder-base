@@ -5,7 +5,7 @@
 
 Early release at directly compiling and installling Zoneminder from source in container.
 This will be an AIO container running all services required by Zoneminder in a single container, managed by s6 overlay.
-
+Logs are rotated according to the [TAI64N standard](http://skarnet.org/software/s6/s6-log.html)
 
 TODO:
 - Replace Apache2 with Nginx + php-fpm + php-fpm optimizations

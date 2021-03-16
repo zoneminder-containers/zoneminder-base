@@ -10,17 +10,16 @@ program_name="ZoneMinder"
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 /bin/s6-svwait -U /var/run/s6/services/mariadb-configure
 
-info "${program_name}" "Starting ZoneMinder..."
+echo "Starting ZoneMinder..." | info "${program_name}"
 s6-notifyoncheck -n 1000 s6-setuidgid www-data /usr/bin/zmpkg.pl start
-tail -f /log/* | sed -u "s/^/[ZoneMinder] /" &
 
 # Wait until service is alive before polling
 /bin/s6-svwait -U /var/run/s6/services/zoneminder
-info "${program_name}" "ZoneMinder is up! Proceeding to monitoring."
+echo "ZoneMinder is up! Proceeding to monitoring." | info "${program_name}"
 
 # Need to sleep to act like service is running
 # Terminate container if zm dies
 until [ "$(pgrep -fc /usr/bin/zm)" -lt "1" ]; do
   sleep 1
 done
-error "${program_name}"  "ZoneMinder has crashed! Exiting..."
+echo "ZoneMinder has crashed! Exiting..." | error "${program_name}"
