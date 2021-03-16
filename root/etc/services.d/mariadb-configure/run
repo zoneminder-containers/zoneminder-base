@@ -4,6 +4,10 @@
 # Stub service to monitor db status
 # ==============================================================================
 
+# Reconfigure to be oneshot
+/bin/s6-svc -o /var/run/s6/services/mariadb-configure
+
+# Wait for db to be up before configuring
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
 if ! (mysqlshow -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm config > /dev/null 2>&1); then
@@ -27,12 +31,10 @@ if [ "$(mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm -e \
 fi
 
 echo "[Mariadb-configure] Upgrading db if necessary"
-s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive | sed -u "s/^/[ZoneMinder] /"
+s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive | sed -u "s/^/[Mariadb-configure] /"
 
 echo "[Mariadb-configure] Refreshing db"
-s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive -f | sed -u "s/^/[ZoneMinder] /"
+s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive -f | sed -u "s/^/[Mariadb-configure] /"
 
 # Notify s6 service is up
 fdmove 1 3 printf "done\n"
-
-exec s6-pause
