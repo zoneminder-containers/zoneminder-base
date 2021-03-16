@@ -32,7 +32,8 @@ services:
       - ./zm/log:/log
     env_file:
       - ./.env
-
+    environment:
+      - ZM_SERVER_HOST=zoneminder1
 
 networks:
   zoneminder:

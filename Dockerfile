@@ -129,17 +129,20 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DZM_TMPDIR=/zoneminder/tmp \
         -DZM_LOGDIR=/log \
         -DZM_WEBDIR=/var/www/html \
-        -DZM_CONTENTDIR=/zoneminder/content \
+        -DZM_CONTENTDIR=/data \
         -DZM_CACHEDIR=/zoneminder/cache \
         -DZM_CGIDIR=/zoneminder/cgi-bin \
         -DZM_WEB_USER=www-data \
         -DZM_WEB_GROUP=www-data \
         -DCMAKE_INSTALL_SYSCONFDIR=config \
-        -DZM_CONFIG_DIR=/zoneminder/config \
+        -DZM_CONFIG_DIR=/config \
         -DCMAKE_BUILD_TYPE=Debug \
         . \
     && make \
     && make DESTDIR="/zminstall" install
+
+# Move default config location
+RUN mv /zminstall/config /zminstall/zoneminder/defaultconfig
 
 #####################################################################
 #                                                                   #
@@ -172,15 +175,20 @@ RUN set -x \
 # Remove content directory create when s6 is implemented
 RUN set -x \
     && mkdir -p \
+        /data \
+        /config \
         /zoneminder/run \
         /zoneminder/cache \
-        /zoneminder/content \
         /zoneminder/tmp \
         /log \
     && chown -R www-data:www-data \
+        /data \
+        /config \
         /zoneminder \
         /log \
     && chmod -R 755 \
+        /data \
+        /config \
         /zoneminder \
         /log
 
