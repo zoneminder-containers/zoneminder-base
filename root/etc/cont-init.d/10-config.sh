@@ -2,7 +2,7 @@
 
 ## Link ZoneMinder config and data folders
 
-if [ ! -f "/zoneminder/config/zm.conf" ]; then
+if [ ! -f "/config/zm.conf" ]; then
   echo "Configuring ZoneMinder Configuration for First Run"
   cp -r /zoneminder/config /config
 fi
