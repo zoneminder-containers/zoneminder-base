@@ -7,9 +7,15 @@
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
 if ! (mysqlshow -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm config > /dev/null 2>&1); then
-    echo "[Mariadb] Creating ZoneMinder db for first run"
+    echo "[Mariadb-configure] Creating ZoneMinder db for first run"
     mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb < /usr/share/zoneminder/db/zm_create.sql
 fi
+
+echo "[Mariadb-configure] Upgrading db if necessary"
+s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive | sed -u "s/^/[ZoneMinder] /"
+
+echo "[Mariadb-configure] Refreshing db"
+s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive -f | sed -u "s/^/[ZoneMinder] /"
 
 # Notify s6 service is up
 fdmove 1 3 printf "done\n"

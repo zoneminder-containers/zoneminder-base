@@ -8,12 +8,6 @@
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 /bin/s6-svwait -U /var/run/s6/services/mariadb-configure
 
-echo "[ZoneMinder] Upgrading db if necessary"
-s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive | sed -u "s/^/[ZoneMinder] /"
-
-echo "[ZoneMinder] Refreshing db"
-s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive -f | sed -u "s/^/[ZoneMinder] /"
-
 echo "[ZoneMinder] Starting ZoneMinder..."
 s6-notifyoncheck -n 1000 s6-setuidgid www-data /usr/bin/zmpkg.pl start
 tail -f /log/* | sed -u "s/^/[ZoneMinder] /" &
