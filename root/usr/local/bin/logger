@@ -1,0 +1,25 @@
+#!/bin/bash
+
+log() {
+  echo "${1}" | s6-tai64n | s6-tai64nlocal | cat
+}
+
+# init service logtext
+init() {
+  log "[${1}] FIRSTRUN ${2}"
+}
+
+# info service logtext
+info() {
+  log "[${1}] INFO ${2}"
+}
+
+# warn service logtext
+warn() {
+  log "[${1}] INFO ${2}"
+}
+
+# warn service logtext
+error() {
+  log "[${1}] ERROR ${2}"
+}

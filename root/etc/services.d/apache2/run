@@ -1,10 +1,12 @@
 #!/usr/bin/with-contenv bash
+. "/usr/local/bin/logger"
+program_name="Apache2"
 # ==============================================================================
 # Apache2
 # Runs Apache2
 # ==============================================================================
 
-echo "[Apache2] Starting Apache2..."
+info "${program_name}" "Starting Apache2..."
 
 source /etc/apache2/envvars
 /usr/sbin/apache2ctl -D FOREGROUND | sed -u "s/^/[Apache2] /"

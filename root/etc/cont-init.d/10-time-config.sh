@@ -1,12 +1,14 @@
 #!/usr/bin/with-contenv bash
+. "/usr/local/bin/logger"
+program_name="time-config"
 
 ## Configure Timezone
-echo "[time-config] Setting system timezone to ${TZ}"
+info "${program_name}" "Setting system timezone to ${TZ}"
 ln -sf "/usr/share/zoneinfo/$TZ" /etc/localtime
 
 ## Set PHP Time
 
-echo "[time-config] Configuring PHP Time"
+info "${program_name}" "Configuring PHP Time"
 # PHP_INSTALL=`php -r "echo php_ini_loaded_file().PHP_EOL;"`
 PHP_VERSION=`php -r "echo PHP_MAJOR_VERSION;" && echo -n "." && php -r "echo PHP_MINOR_VERSION;"`
 # Uncomment date.timezone

@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+. "/usr/local/bin/logger"
 
 echo "[ZoneMinder] Stopping ZoneMinder"
 # TODO: Figure out why these logs aren't coming through
