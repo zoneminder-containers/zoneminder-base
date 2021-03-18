@@ -1,3 +1,10 @@
 #!/usr/bin/with-contenv bash
+. "/usr/local/bin/logger"
+program_name="Apache2"
+# ==============================================================================
+# Apache2
+# Stops Apache2 during container stop to allow shutdown to proceed
+# ==============================================================================
 
+echo "Stopping Apache2" | info "${program_name}"
 exec /usr/sbin/apachectl -k graceful-stop

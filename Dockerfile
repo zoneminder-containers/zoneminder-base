@@ -217,6 +217,11 @@ RUN set -x \
     && a2enconf zoneminder \
     && a2enmod rewrite
 
+# Redirect apache logs to stdout
+RUN set -x \
+    && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
+    && ln -sf /proc/self/fd/1 /var/log/apache2/error.log
+
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}
 
@@ -225,8 +230,6 @@ ENV \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     APACHE_RUN_USER=www-data \
     APACHE_RUN_GROUP=www-data \
-    S6_KILL_FINISH_MAXTIME=30000 \
-    S6_LOGGING_SCRIPT="1 n20 s1000000" \
     SOCKLOG_TIMESTAMP_FORMAT="" \
     MAX_LOG_SIZE_BYTES=1000000 \
     MAX_LOG_NUMBER=10

@@ -22,6 +22,8 @@ services:
       restart_policy:
         condition: none
     stop_grace_period: 45s
+    depends_on:
+      - db
     ports:
       - 80:80
     networks:
