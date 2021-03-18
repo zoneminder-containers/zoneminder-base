@@ -17,7 +17,8 @@ if ! (mysqlshow -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm config > /dev/null 2
     mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb < /usr/share/zoneminder/db/zm_create.sql
 fi
 
-if [ "$(mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm -e \
+if [[ ! -z ${ZM_SERVER_HOST} ]] &&
+  [ "$(mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm -e \
   "SELECT COUNT(*) FROM Servers WHERE Name = '${ZM_SERVER_HOST}';"  |
   cut -d \t -f 2 |
   sed -n '2 p')" \
