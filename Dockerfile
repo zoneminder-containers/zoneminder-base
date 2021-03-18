@@ -133,7 +133,7 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DZM_RUNDIR=/zoneminder/run \
         -DZM_SOCKDIR=/zoneminder/run \
         -DZM_TMPDIR=/zoneminder/tmp \
-        -DZM_LOGDIR=/var/log/zm \
+        -DZM_LOGDIR=/dev/null \
         -DZM_WEBDIR=/var/www/html \
         -DZM_CONTENTDIR=/data \
         -DZM_CACHEDIR=/zoneminder/cache \
