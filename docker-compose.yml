@@ -25,6 +25,7 @@ services:
       - 80:80
     networks:
       - zoneminder
+    shm_size: 1G
     volumes:
       - ./zm/data:/data
       - ./zm/config:/config
