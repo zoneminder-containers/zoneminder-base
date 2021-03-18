@@ -53,7 +53,7 @@ ARG S6_ARCH
 WORKDIR /s6downloader
 
 RUN set -x \
-    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/latest/download/s6-overlay-${S6_ARCH}.tar.gz" \
+    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/download/v2.1.0.2/s6-overlay-${S6_ARCH}.tar.gz" \
     && mkdir -p /tmp/s6 \
     && tar zxvf /tmp/s6-overlay.tar.gz -C /tmp/s6 \
     && cp -r /tmp/s6/* .
