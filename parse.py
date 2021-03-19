@@ -43,6 +43,7 @@ def get_alternatives(pkg_list: list, preferred_alternative: list = None) -> Tupl
                     if pkg in preferred_alternative:
                         found = True
                         alternatives.append([pkg])
+                        break
             if not found:
                 raise AlternativeNotDefined(f"Alternative for pkgs not found: {dep}")
         else:
@@ -152,6 +153,8 @@ alternative = flatten_list(alternative)
 all_build = standard
 all_build.extend(alternative)
 
+print("Runtime pkgs: ", all_runtime)
+print("Build pkgs: ", all_build)
 with open("runtime.txt", "w") as file_obj:
     for pkg in all_runtime:
         file_obj.write(pkg + "\n")
