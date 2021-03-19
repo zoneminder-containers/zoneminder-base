@@ -8,4 +8,5 @@ program_name="ZoneMinder"
 
 echo "Stopping ZoneMinder" | info "${program_name}"
 s6-setuidgid www-data /usr/bin/zmpkg.pl stop
+killall -9 socklog
 s6-svscanctl -t /var/run/s6/services
