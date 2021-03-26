@@ -135,7 +135,7 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DZM_RUNDIR=/zoneminder/run \
         -DZM_SOCKDIR=/zoneminder/run \
         -DZM_TMPDIR=/zoneminder/tmp \
-        -DZM_LOGDIR=/tmp \
+        -DZM_LOGDIR=/zoneminder/logs \
         -DZM_WEBDIR=/var/www/html \
         -DZM_CONTENTDIR=/data \
         -DZM_CACHEDIR=/zoneminder/cache \
@@ -193,14 +193,24 @@ RUN set -x \
     && groupmod -o -g 911 www-data \
     && usermod -o -u 911 www-data
 
+# Install ZM
+COPY --chown=www-data --chmod=755 --from=builder /zminstall /
+
+# Install s6 overlay
+COPY --from=s6downloader /s6downloader /
+
+# Copy rootfs
+COPY --from=rootfs-converter /rootfs /
+
+
 # Create required folders
-# Remove content directory create when s6 is implemented
 RUN set -x \
     && mkdir -p \
         /data \
         /config \
         /zoneminder/run \
         /zoneminder/cache \
+        /zoneminder/logs \
         /zoneminder/tmp \
         /log \
     && chown -R www-data:www-data \
@@ -215,26 +225,23 @@ RUN set -x \
     && chown -R nobody:nogroup \
         /log
 
-# Hide index.html
-RUN set -x \
-    && rm /var/www/html/index.html
-
-# Install ZM
-COPY --chown=www-data --chmod=755 --from=builder /zminstall /
-
-# Install s6 overlay
-COPY --from=s6downloader /s6downloader /
-
-# Copy rootfs
-COPY --from=rootfs-converter /rootfs /
+# Redirect all ZoneMinder logs to /dev/null since all logging in handled
+# by socklog. This avoid overflowing the logging directory
+RUN ln -sf /dev/null /zoneminder/logs/zma_m1.log \
+    && ln -sf /dev/null /zoneminder/logs/zmc_m1.log \
+    && ln -sf /dev/null /zoneminder/logs/zmdc.log \
+    && ln -sf /dev/null /zoneminder/logs/zmfilter_1.log \
+    && ln -sf /dev/null /zoneminder/logs/zmfilter_2.log \
+    && ln -sf /dev/null /zoneminder/logs/zmpkg.log \
+    && ln -sf /dev/null /zoneminder/logs/zmstats.log \
+    && ln -sf /dev/null /zoneminder/logs/zmupdate.log \
+    && ln -sf /dev/null /zoneminder/logs/zmwatch.log
 
 # Reconfigure apache
 RUN set -x \
+    && rm /var/www/html/index.html \
     && a2enconf zoneminder \
-    && a2enmod rewrite
-
-# Redirect apache logs to stdout
-RUN set -x \
+    && a2enmod rewrite \
     && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
     && ln -sf /proc/self/fd/1 /var/log/apache2/error.log
 
