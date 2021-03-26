@@ -1,0 +1,43 @@
+name: Update ZoneMinder Version
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Update ZoneMinder Version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Update
+        id: update
+        run: |
+          set -x
+          wget \
+            --no-check-certificate -qO - \
+            https://api.github.com/repos/ZoneMinder/zoneminder/releases/latest \
+            | awk '/tag_name/{print $4;exit}' FS='[""]' \
+            > latest_version.txt
+          export VERSION=`cat latest_version.txt`
+          echo "::set-output name=version::${VERSION}"
+      - name: Push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.3
+        with:
+          custom_tag: ${{ steps.update.outputs.version }}
+          tag_prefix: ''
+          # Custom PAT required to trigger build workflow
+          github_token: ${{ secrets.GHCR_PAT }}
+#      - name: Create Pull Request
+#        uses: peter-evans/create-pull-request@v3
+#        with:
+#            committer: GitHub <noreply@github.com>
+#            author: GitHub <noreply@github.com>
+#            commit-message: Update ZoneMinder version to ${{ steps.update.outputs.version }}
+#            branch: action/update-zmversion
+#            delete-branch: true
+#            title: Bump version to ${{ steps.update.outputs.version }}
+#            body: Bumps version to ${{ steps.update.outputs.version }}. See [ZoneMinder Releases](https://github.com/ZoneMinder/zoneminder/releases).
+#            labels: automated

@@ -1,0 +1,3 @@
+/config true www-data 0755 0755
+/data true www-data 0755 0755
+/log true nobody 0755 0755

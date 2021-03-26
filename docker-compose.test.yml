@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: mariadb
+    restart: always
+    networks:
+      - zoneminder
+    volumes:
+      - ./zm/db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=zm
+    env_file:
+      - ./.env
+
+  zoneminder:
+    container_name: zoneminder
+    image: ci:latest
+    # Disable automatic restarts so we know if container dies on startup
+    deploy:
+      restart_policy:
+        condition: none
+    stop_grace_period: 45s
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    networks:
+      - zoneminder
+    volumes:
+      - ./zm/data:/data
+      - ./zm/config:/config
+      - ./zm/log:/log
+    env_file:
+      - ./.env
+    environment:
+      - ZM_SERVER_HOST=zoneminder1
+
+networks:
+  zoneminder:

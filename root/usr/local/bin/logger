@@ -1,0 +1,33 @@
+#!/bin/bash
+
+log() {
+  echo "${1}" | s6-tai64n | s6-tai64nlocal | cat
+}
+
+# init service logtext
+init() {
+  while read -r data_in; do
+    log "FIRSTRUN [${1}] ${data_in}"
+  done
+}
+
+# info service logtext
+info() {
+  while read -r data_in; do
+    log "INFO [${1}] ${data_in}"
+  done
+}
+
+# warn service logtext
+warn() {
+  while read -r data_in; do
+    log "WARN [${1}] ${data_in}"
+  done
+}
+
+# warn service logtext
+error() {
+  while read -r data_in; do
+    log "ERROR [${1}] ${data_in}"
+  done
+}

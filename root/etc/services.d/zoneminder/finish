@@ -1,7 +1,12 @@
-#!/usr/bin/execlineb -S0
+#!/usr/bin/with-contenv bash
+. "/usr/local/bin/logger"
+program_name="ZoneMinder"
 # ==============================================================================
 # ZoneMinder
-# Take down the S6 supervision tree when ZoneMinder fails to start/crashes
+# Take down the S6 supervision tree if db is no longer accessible
 # ==============================================================================
 
+echo "Stopping ZoneMinder" | info "${program_name}"
+s6-setuidgid www-data /usr/bin/zmpkg.pl stop
+killall -9 socklog
 s6-svscanctl -t /var/run/s6/services

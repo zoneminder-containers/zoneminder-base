@@ -1,4 +1,5 @@
 import re
+from os import path
 from typing import Optional, List, Pattern, Tuple
 
 
@@ -8,7 +9,11 @@ class AlternativeNotDefined(Exception):
 
 def load_control() -> List[Optional[str]]:
     control_programs = []
-    with open("distros/ubuntu2004/control", "r") as file_obj:
+    if path.isfile("distros/ubuntu2004/control"):
+        control_location = "distros/ubuntu2004/control"
+    else:
+        control_location = "distros/ubuntu1604/control"
+    with open(control_location, "r") as file_obj:
         program = ""
         pkg_found = False
         for line in file_obj:
@@ -38,6 +43,7 @@ def get_alternatives(pkg_list: list, preferred_alternative: list = None) -> Tupl
                     if pkg in preferred_alternative:
                         found = True
                         alternatives.append([pkg])
+                        break
             if not found:
                 raise AlternativeNotDefined(f"Alternative for pkgs not found: {dep}")
         else:
@@ -101,9 +107,15 @@ def flatten_list(input_list: list) -> list:
     output = []
     for inner_list in input_list:
         for value in inner_list:
+            if value in removed_dependencies:
+                continue
             output.append(value)
     return output
 
+
+removed_dependencies = [
+    "rsyslog"
+]
 
 preferred_alternative = [
     "liblivemedia64",
@@ -113,6 +125,18 @@ preferred_alternative = [
     "rsyslog",
     "libjpeg62-turbo-dev",
     "default-libmysqlclient-dev",
+    "ffmpeg",
+    "libssl1.1",
+    "libswresample3",
+    "libswscale5",
+    "libx264-155",
+    "php-json",
+    "php-apcu",
+    "php-gd",
+    "php-mysql",
+    "libgcrypt-dev",
+    "libswresample-dev",
+    "python-sphinx",
 ]
 
 control_pkg = get_value(load_control()[0], "Depends")
@@ -129,6 +153,8 @@ alternative = flatten_list(alternative)
 all_build = standard
 all_build.extend(alternative)
 
+print("Runtime pkgs: ", all_runtime)
+print("Build pkgs: ", all_build)
 with open("runtime.txt", "w") as file_obj:
     for pkg in all_runtime:
         file_obj.write(pkg + "\n")

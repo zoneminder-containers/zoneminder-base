@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+
+if mysqladmin ping --connect-timeout 5 -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -hdb 2>&1 |
+  grep 'mysqld is alive' > /dev/null; then
+    exit # mysql is running
+fi
+exit 1 # mysql is not running
