@@ -115,7 +115,8 @@ RUN set -x \
 # Install libjwt since its an optional dep not included in the control file
 RUN set -x \
     && apt-get install -y \
-        libjwt-dev
+        libjwt-dev \
+        libjwt0
 
 # Install Build Dependencies
 RUN --mount=type=bind,target=/tmp/build.txt,source=/zmsource/build.txt,from=zm-source,rw \
@@ -160,6 +161,20 @@ RUN mv /zminstall/config /zminstall/zoneminder/defaultconfig
 
 FROM base-image as final-build
 ARG ZM_VERSION
+
+# Install missing dependencies not defined in control file
+# Found by running dpkg -I on the pkg...
+# Build pkg, run dpkg -I, parse output, profit?
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y \
+        libcurl3-gnutls \
+        libjs-mootools \
+        libjwt-gnutls0 \
+        libmp4v2-2 \
+        libssl1.1 \
+        libvlc5 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install additional services required by ZM
 # PHP-fpm not required for apache
