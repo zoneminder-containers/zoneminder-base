@@ -15,6 +15,7 @@ RUN set -x \
     && apk add \
         git \
     && git clone https://github.com/ZoneMinder/zoneminder.git . \
+    && git submodule update --init --recursive \
     && git checkout ${ZM_VERSION} \
     && git submodule update --init --recursive
 
