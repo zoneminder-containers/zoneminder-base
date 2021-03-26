@@ -11,7 +11,7 @@ jobs:
     name: Build Docker Image
     # Set version to master for nightly builds
     env:
-      ZM_VERSION: master
+      ZM_VERSION: 1.34.22
     strategy:
       matrix:
         include:
