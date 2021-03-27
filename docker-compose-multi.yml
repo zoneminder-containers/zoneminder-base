@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: mariadb
+    restart: always
+    networks:
+      - zoneminder
+    volumes:
+      - ./zm/db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=zm
+    env_file:
+      - ./.env
+
+  zoneminder1:
+    container_name: zoneminder1
+    image: ghcr.io/zoneminder-containers/zoneminder-base:1.34.23
+    restart: always
+    stop_grace_period: 45s
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    networks:
+      - zoneminder
+    shm_size: 1G
+    volumes:
+      - ./zm/data:/data
+      - ./zm/config1:/config
+      - ./zm/log1:/log
+    env_file:
+      - ./.env
+    environment:
+      - ZM_SERVER_HOST=zoneminder1
+
+  zoneminder2:
+    container_name: zoneminder2
+    image: ghcr.io/zoneminder-containers/zoneminder-base:1.34.23
+    restart: always
+    stop_grace_period: 45s
+    depends_on:
+      - db
+    ports:
+      - 81:80
+    networks:
+      - zoneminder
+    shm_size: 1G
+    volumes:
+      - ./zm/data:/data
+      - ./zm/config2:/config
+      - ./zm/log2:/log
+    env_file:
+      - ./.env
+    environment:
+      - ZM_SERVER_HOST=zoneminder2
+
+networks:
+  zoneminder:

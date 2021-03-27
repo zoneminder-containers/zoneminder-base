@@ -177,7 +177,7 @@ jobs:
 
       # latest
       - name: Deploy Latest (latest)
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           set -x
           docker tag ci:${{ github.run_number }} ${{ matrix.registry.repo }}:${{ matrix.arch }}-latest
@@ -277,7 +277,7 @@ jobs:
 
       # latest
       - name: Deploy Latest (latest)
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           set -x
           docker manifest create \
