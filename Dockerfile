@@ -252,6 +252,9 @@ RUN set -x \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
 
+# Remove rsyslog as its unneeded and hangs the container on shutdown
+RUN apt-get -y remove rsyslog || true
+
 ## Create www-data user
 RUN set -x \
     && groupmod -o -g 911 www-data \
