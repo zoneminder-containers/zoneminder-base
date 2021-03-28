@@ -14,7 +14,7 @@ echo "Mariadb is up! Proceeding to monitoring." | info "${program_name}"
 
 # Need to sleep to act like service is running
 # Terminate container if db dies
-until ! (mysqladmin ping --connect-timeout 5 -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -hdb 2>&1 |
+until ! (mysqladmin ping --connect-timeout 5 -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" 2>&1 |
   grep 'mysqld is alive' > /dev/null); do
   sleep 1
 done

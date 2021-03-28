@@ -12,25 +12,25 @@ program_name="Mariadb-configure"
 # Wait for db to be up before configuring
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
-if ! (mysqlshow -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm config > /dev/null 2>&1); then
-    init "${program_name}" echo "Creating ZoneMinder db for first run"
-    mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb < /usr/share/zoneminder/db/zm_create.sql
+if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm config > /dev/null 2>&1); then
+    echo "Creating ZoneMinder db for first run" | init "${program_name}"
+    mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
 fi
 
-if [[ ! -z ${ZM_SERVER_HOST} ]] &&
-  [ "$(mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm -e \
+if [[ -n "${ZM_SERVER_HOST}" ]] &&
+  [ "$(mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e \
   "SELECT COUNT(*) FROM Servers WHERE Name = '${ZM_SERVER_HOST}';"  |
-  cut -d \t -f 2 |
+  cut -f 2 |
   sed -n '2 p')" \
   == "0" ]; then
-    echo "Adding MultiServer db entry" | init "${program_name}"
+    echo "Adding multi-server db entry" | init "${program_name}"
     insert_command="LOCK TABLES \`Servers\` WRITE;"
     insert_command+="INSERT INTO \`Servers\` "
     insert_command+="(Protocol, Hostname, Port, PathToIndex, PathToZMS, PathToApi, Name, zmstats, zmaudit, zmtrigger, zmeventnotification)";
     insert_command+=" VALUES "
     insert_command+="('http','${ZM_SERVER_HOST}',80,'/index.php','/cgi-bin/nph-zms','/zm/api','${ZM_SERVER_HOST}',1,1,1,0);";
     insert_command+="UNLOCK TABLES;"
-    mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -hdb zm -e "${insert_command}"
+    mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "${insert_command}"
 fi
 
 echo "Upgrading db if necessary" | info "${program_name}"
