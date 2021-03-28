@@ -53,7 +53,6 @@ jobs:
 
       # Build tagged version
       - name: Build Tag
-        id: build-tag
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           set -x
@@ -65,7 +64,6 @@ jobs:
             --file ./Dockerfile \
             --load \
             .
-          echo "::set-output name=ZM_VERSION::${GITHUB_REF##*/}"
 
       - name: Inspect
         run: |
@@ -82,16 +80,6 @@ jobs:
         with:
           name: ci-${{ matrix.arch_friendly }}-${{ github.run_number }}
           path: ci-${{ matrix.arch_friendly }}-${{ github.run_number }}.tar.gz
-
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: ci-${{ matrix.arch_friendly }}-${{ github.run_number }}.tar.gz
-          body: Automated release of ZoneMinder v${{ steps.build-tag.outputs.ZM_VERSION }}
-          draft: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     needs: build
@@ -124,6 +112,34 @@ jobs:
           docker stop zoneminder
           sleep 30
           docker-compose -f docker-compose.test.yml down
+
+  release:
+    needs: test
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - i386
+          - amd64
+    steps:
+      - name: Download container artifact
+        uses: actions/download-artifact@v2
+
+      - name: Set Release Version
+        id: get-version
+        run: |
+          echo "::set-output name=ZM_VERSION::${GITHUB_REF##*/}"
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: /**/ci-*.tar.gz
+          body: Automated release of ZoneMinder v${{ steps.get-version.outputs.ZM_VERSION }}
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     needs: test
