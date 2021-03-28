@@ -155,12 +155,6 @@ RUN set -x \
         ./runtime-deps.deb \
         ./build-deps.deb
 
-# Install libjwt since its an optional dep not included in the control file
-RUN set -x \
-    && apt-get install -y \
-        libjwt-dev \
-        libjwt0
-
 WORKDIR /zmbuild
 RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
     set -x \
