@@ -302,8 +302,8 @@ RUN set -x \
     && rm /var/www/html/index.html \
     && a2enconf zoneminder \
     && a2enmod rewrite \
-    && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
-    && ln -sf /proc/self/fd/1 /var/log/apache2/error.log
+    && ln -sf /dev/stdout /var/log/apache2/access.log \
+    && ln -sf /dev/stderr /var/log/apache2/error.log
 
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}
