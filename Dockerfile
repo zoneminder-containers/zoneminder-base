@@ -19,13 +19,14 @@ RUN set -x \
     && git checkout ${ZM_VERSION} \
     && git submodule update --init --recursive
 
-COPY parse.py .
+COPY parse_control.py .
 
 # This parses the control file located at distros/ubuntu2004/control
-# It outputs runtime.txt and build.txt with all the dependencies to be
-# apt-get installed
+# It outputs zoneminder_control which only includes requirements for zoneminder
+# This prevents equivs-build from being confused when there are multiple packages
+# Also outputz zoneminder_compat for shlib resolver
 RUN set -x \
-    && python3 -u parse.py
+    && python3 -u parse_control.py
 
 #####################################################################
 #                                                                   #
@@ -67,11 +68,13 @@ RUN set -x \
 
 #####################################################################
 #                                                                   #
-# Install base dependencies                                         #
+# Prepare base-image with core programs + repository                #
 #                                                                   #
 #####################################################################
+FROM debian:buster as base-image-core
 
-FROM debian:buster as base-image
+# Skip interactive post-install scripts
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN set -x \
     && apt-get update \
@@ -86,32 +89,70 @@ RUN set -x \
     && echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
     && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
 
-# Install ZM Dependencies
-# https://github.com/ZoneMinder/zoneminder/blob/8ebaee998aa6b1de0123753a0df86b240235fa33/distros/ubuntu2004/control#L42
-RUN --mount=type=bind,target=/tmp/runtime.txt,source=/zmsource/runtime.txt,from=zm-source,rw \
-    set -x \
-    && apt-get update \
-    && apt-get install -y \
-        $(grep -vE "^\s*#" /tmp/runtime.txt  | tr "\n" " ") \
-    && rm -rf /var/lib/apt/lists/*
-
 #####################################################################
 #                                                                   #
-# Install build dependencies and build ZoneMinder                   #
+# Build packages containing build and runtime dependencies          #
+# for installation in later stages                                  #
 #                                                                   #
 #####################################################################
-
-FROM base-image as builder
-WORKDIR /zmbuild
-
-# Skip interactive post-install scripts
-ENV DEBIAN_FRONTEND=noninteractive
+FROM base-image-core as package-builder
+WORKDIR /packages
 
 # Install base toolset
 RUN set -x \
     && apt-get update \
     && apt-get install -y \
-        build-essential
+        devscripts
+
+# Create runtime package
+RUN --mount=type=bind,target=/tmp/control,source=/zmsource/zoneminder_control,from=zm-source,rw \
+    equivs-build /tmp/control \
+    && ls | grep -P \(zoneminder_\)\(.*\)\(\.deb\) | xargs -I {} mv {} runtime-deps.deb
+
+# Create build-deps package
+RUN --mount=type=bind,target=/tmp/control,source=/zmsource/zoneminder_control,from=zm-source,rw \
+    mk-build-deps /tmp/control \
+    && ls | grep -P \(build-deps\)\(.*\)\(\.deb\) | xargs -I {} mv {} build-deps.deb
+
+#####################################################################
+#                                                                   #
+# Install runtime dependencies                                      #
+# Does not include shared lib dependencies as those are resolved    #
+# after building. Installed in final-image                          #
+#                                                                   #
+#####################################################################
+FROM base-image-core as base-image
+
+# Install ZM Dependencies
+# Don't want recommends of ZM
+RUN --mount=type=bind,target=/tmp/runtime-deps.deb,source=/packages/runtime-deps.deb,from=package-builder,rw \
+    set -x \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ./tmp/runtime-deps.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+#####################################################################
+#                                                                   #
+# Install runtime + build dependencies                              #
+# Build Zoneminder                                                  #
+#                                                                   #
+#####################################################################
+FROM package-builder as builder
+WORKDIR /zmbuild
+# Yes WORKDIR is overwritten but this is more a comment
+# to specify the final WORKDIR
+
+# Install ZM Buid and Runtime Dependencies
+# Need to install runtime dependencies here as well
+# because we don't want devscripts in the base-image
+# This results in runtime dependencies being installed twice to avoid additional bloating
+WORKDIR /packages
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y \
+        ./runtime-deps.deb \
+        ./build-deps.deb
 
 # Install libjwt since its an optional dep not included in the control file
 RUN set -x \
@@ -119,12 +160,7 @@ RUN set -x \
         libjwt-dev \
         libjwt0
 
-# Install Build Dependencies
-RUN --mount=type=bind,target=/tmp/build.txt,source=/zmsource/build.txt,from=zm-source,rw \
-    set -x \
-    && apt-get install -y \
-        $(grep -vE "^\s*#" /tmp/build.txt  | tr "\n" " ")
-
+WORKDIR /zmbuild
 RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
     set -x \
     && cmake \
@@ -154,30 +190,58 @@ RUN mv /zminstall/config /zminstall/zoneminder/defaultconfig
 
 #####################################################################
 #                                                                   #
+# Resolve shlib:Depends to resolved.txt                             #
+#                                                                   #
+#####################################################################
+FROM builder as shlibs-resolver
+WORKDIR /shlibs
+
+COPY --from=zm-source /zmsource/zoneminder_control ./debian/control
+COPY --from=zm-source /zmsource/zoneminder_compat ./debian/compat
+
+# Move zoneminder install to directory where dh_shlibdeps can find it
+# Run dh_shlibdeps which will resolve all shared library dependencies
+# Alternative: dpkg-shlibdeps -O debian/zoneminder/zms << Only need zms executable for now
+RUN mv /zminstall ./debian/zoneminder \
+    && dh_shlibdeps \
+    && mv ./debian/zoneminder.substvars resolved.txt
+
+#####################################################################
+#                                                                   #
+# Format resolved.txt for installation                              #
+#                                                                   #
+#####################################################################
+FROM python:alpine as shlibs-resolved
+WORKDIR /resolved
+
+COPY --from=shlibs-resolver /shlibs/resolved.txt .
+COPY parse_shlibs.py .
+
+# This reads resolved.txt and writes resolved_installable.txt for installing
+# with apt-get install
+RUN set -x \
+    && python3 -u parse_shlibs.py
+
+
+#####################################################################
+#                                                                   #
 # Install ZoneMinder                                                #
 # Create required folders                                           #
 # Install additional dependencies                                   #
 #                                                                   #
 #####################################################################
-
 FROM base-image as final-build
 ARG ZM_VERSION
 
-# Install missing dependencies not defined in control file
-# Found by running dpkg -I on the pkg...
-# Build pkg, run dpkg -I, parse output, profit?
-RUN set -x \
+# Install ZM Shared Library Dependencies
+RUN --mount=type=bind,target=/tmp/resolved_installable.txt,source=/resolved/resolved_installable.txt,from=shlibs-resolved,rw \
+    set -x \
     && apt-get update \
     && apt-get install -y \
-        libcurl3-gnutls \
-        libjs-mootools \
-        libjwt-gnutls0 \
-        libmp4v2-2 \
-        libssl1.1 \
-        libvlc5 \
+        $(grep -vE "^\s*#" /tmp/resolved_installable.txt  | tr "\n" " ") \
     && rm -rf /var/lib/apt/lists/*
 
-# Install additional services required by ZM
+# Install additional services required by ZM ("Recommends")
 # PHP-fpm not required for apache
 RUN set -x \
     && apt-get update \
