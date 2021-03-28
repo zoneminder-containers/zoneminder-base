@@ -86,6 +86,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: ci-${{ matrix.arch_friendly }}-${{ github.run_number }}.tar.gz
+          body: Automated release of ZoneMinder v${GITHUB_REF##*/}
           draft: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
