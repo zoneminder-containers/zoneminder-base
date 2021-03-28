@@ -118,11 +118,6 @@ jobs:
     name: Upload Release Asset
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch:
-          - i386
-          - amd64
     steps:
       - name: Download container artifact
         uses: actions/download-artifact@v2
