@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:experimental
 ARG ZM_VERSION=master
 ARG S6_ARCH=amd64
+
 #####################################################################
 #                                                                   #
 # Download Zoneminder Source Code                                   #
@@ -198,12 +199,12 @@ WORKDIR /shlibs
 
 COPY --from=zm-source /zmsource/zoneminder_control ./debian/control
 COPY --from=zm-source /zmsource/zoneminder_compat ./debian/compat
+RUN mv /zminstall ./debian/zoneminder
 
 # Move zoneminder install to directory where dh_shlibdeps can find it
 # Run dh_shlibdeps which will resolve all shared library dependencies
 # Alternative: dpkg-shlibdeps -O debian/zoneminder/zms << Only need zms executable for now
-RUN mv /zminstall ./debian/zoneminder \
-    && dh_shlibdeps \
+RUN dh_shlibdeps \
     && mv ./debian/zoneminder.substvars resolved.txt
 
 #####################################################################
@@ -221,7 +222,6 @@ COPY parse_shlibs.py .
 # with apt-get install
 RUN set -x \
     && python3 -u parse_shlibs.py
-
 
 #####################################################################
 #                                                                   #
@@ -268,7 +268,6 @@ COPY --from=s6downloader /s6downloader /
 
 # Copy rootfs
 COPY --from=rootfs-converter /rootfs /
-
 
 # Create required folders
 RUN set -x \
