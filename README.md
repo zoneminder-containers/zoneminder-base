@@ -8,11 +8,12 @@ This will be an AIO container running all services required by Zoneminder in a s
 Logs are rotated according to the [TAI64N standard](http://skarnet.org/software/s6/s6-log.html)
 
 TODO:
-- Replace Apache2 with Nginx + php-fpm + php-fpm optimizations
-- Figure out correct sql commands to automate multiserver support
+- Replace Apache2 with Nginx + php-fpm + php-fpm optimizations (In progress)
+- Fix logging weirdness
 
   
 DONE:
+- ~~Figure out correct sql commands to automate multiserver support~~
 - ~~Go back to internal mariadb instead of external container~~ (will not do for multi-server support)
 - ~~Get finish scripts to output logs properly~~
 - ~~Fix ZM install/file directories (set to unified mount dir)~~
