@@ -1,3 +1,3 @@
 #!/usr/bin/with-contenv bash
 
-logutil-service /log/apache
+logutil-service /log/nginx

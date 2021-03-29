@@ -87,7 +87,7 @@ RUN set -x \
 
 # Required for libmp4v2-dev
 RUN set -x \
-    && echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" >> /etc/apt/sources.list \
+    && echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" > /etc/apt/sources.list.d/zoneminder.list \
     && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
 
 #####################################################################
@@ -235,13 +235,18 @@ RUN --mount=type=bind,target=/tmp/resolved_installable.txt,source=/resolved/reso
         $(grep -vE "^\s*#" /tmp/resolved_installable.txt  | tr "\n" " ") \
     && rm -rf /var/lib/apt/lists/*
 
+# Add Nginx Repo
+RUN set -x \
+    && echo "deb https://nginx.org/packages/mainline/debian/ buster nginx" > /etc/apt/sources.list.d/nginx.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+
 # Install additional services required by ZM ("Recommends")
 # PHP-fpm not required for apache
 RUN set -x \
     && apt-get update \
     && apt-get install -y \
-        apache2 \
-        libapache2-mod-php \
+        nginx \
+        fcgiwrap \
         php-fpm \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
@@ -266,6 +271,7 @@ COPY --from=rootfs-converter /rootfs /
 # Create required folders
 RUN set -x \
     && mkdir -p \
+        /run/php \
         /data \
         /config \
         /zoneminder/run \
@@ -297,13 +303,11 @@ RUN ln -sf /dev/null /zoneminder/logs/zma_m1.log \
     && ln -sf /dev/null /zoneminder/logs/zmupdate.log \
     && ln -sf /dev/null /zoneminder/logs/zmwatch.log
 
-# Reconfigure apache
+# Reconfigure nginx
 RUN set -x \
-    && rm /var/www/html/index.html \
-    && a2enconf zoneminder \
-    && a2enmod rewrite \
-    && ln -sf /dev/stdout /var/log/apache2/access.log \
-    && ln -sf /dev/stderr /var/log/apache2/error.log
+    && ln -sf /proc/self/fd/1 /var/log/nginx/access.log \
+    && ln -sf /proc/self/fd/2 /var/log/nginx/error.log \
+    && ln -sf /proc/self/fd/2 /var/log/php7.3-fpm.log
 
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}

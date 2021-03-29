@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+. "/usr/local/bin/logger"
+program_name="PHP-fpm"
+# ==============================================================================
+# PHP-fpm
+# Runs PHP-fpm
+# ==============================================================================
+
+echo "Starting PHP-fpm..." | info "${program_name}"
+
+exec /usr/sbin/php-fpm${PHP_VERSION} --nodaemonize --fpm-config /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf | sed -u "s/^/[${program_name}] /"

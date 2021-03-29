@@ -1,10 +1,11 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="Apache2"
+program_name="Nginx"
 # ==============================================================================
-# Apache2
-# Stops Apache2 during container stop to allow shutdown to proceed
+# Nginx
+# Runs Nginx
 # ==============================================================================
 
-echo "Stopping Apache2" | info "${program_name}"
-exec /usr/sbin/apachectl -k graceful-stop
+echo "Starting Nginx..." | info "${program_name}"
+
+exec nginx -g 'daemon off;' | sed -u "s/^/[${program_name}] /"

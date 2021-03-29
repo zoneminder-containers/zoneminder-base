@@ -1,12 +1,10 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="Apache2"
+program_name="Nginx"
 # ==============================================================================
-# Apache2
-# Runs Apache2
+# Nginx
+# Stops Nginx during container stop to allow shutdown to proceed
 # ==============================================================================
 
-echo "Starting Apache2..." | info "${program_name}"
-
-source /etc/apache2/envvars
-/usr/sbin/apache2ctl -D FOREGROUND | sed -u "s/^/[Apache2] /"
+echo "Stopping Nginx" | info "${program_name}"
+exec nginx -s quit
