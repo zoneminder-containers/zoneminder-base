@@ -5,6 +5,6 @@
 # Runs Nginx
 # ==============================================================================
 
-echo "Starting Nginx..."
+echo "Starting Nginx..." | info
 
 exec nginx -g 'daemon off;'
