@@ -245,8 +245,10 @@ RUN set -x \
 RUN set -x \
     && apt-get update \
     && apt-get install -y \
-        nginx \
         fcgiwrap \
+        mailutils \
+        msmtp \
+        nginx \
         php-fpm \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
