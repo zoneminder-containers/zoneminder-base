@@ -25,11 +25,14 @@ services:
       - 80:80
     networks:
       - zoneminder
-    shm_size: 1G
     volumes:
       - ./zm/data:/data
       - ./zm/config1:/config
       - ./zm/log1:/log
+      - type: tmpfs
+        target: /dev/shm
+        tmpfs:
+          size: 1G
     env_file:
       - ./.env
     environment:
