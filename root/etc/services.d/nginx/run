@@ -8,4 +8,4 @@ program_name="Nginx"
 
 echo "Starting Nginx..." | info "${program_name}"
 
-exec nginx -g 'daemon off;' | sed -u "s/^/[${program_name}] /"
+exec nginx -g 'daemon off;' | sed -u "s/^/[${program_name}] /" | cat

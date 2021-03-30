@@ -6,7 +6,7 @@ program_name="ZoneMinder"
 # Runs ZoneMinder
 # ==============================================================================
 
-/bin/s6-svwait -u /var/run/s6/services/apache2
+/bin/s6-svwait -u /var/run/s6/services/nginx
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 /bin/s6-svwait -U /var/run/s6/services/mariadb-configure
 

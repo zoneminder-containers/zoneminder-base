@@ -291,23 +291,11 @@ RUN set -x \
     && chown -R nobody:nogroup \
         /log
 
-# Redirect all ZoneMinder logs to /dev/null since all logging in handled
-# by socklog. This avoid overflowing the logging directory
-RUN ln -sf /dev/null /zoneminder/logs/zma_m1.log \
-    && ln -sf /dev/null /zoneminder/logs/zmc_m1.log \
-    && ln -sf /dev/null /zoneminder/logs/zmdc.log \
-    && ln -sf /dev/null /zoneminder/logs/zmfilter_1.log \
-    && ln -sf /dev/null /zoneminder/logs/zmfilter_2.log \
-    && ln -sf /dev/null /zoneminder/logs/zmpkg.log \
-    && ln -sf /dev/null /zoneminder/logs/zmstats.log \
-    && ln -sf /dev/null /zoneminder/logs/zmupdate.log \
-    && ln -sf /dev/null /zoneminder/logs/zmwatch.log
-
 # Reconfigure nginx
 RUN set -x \
     && ln -sf /proc/self/fd/1 /var/log/nginx/access.log \
-    && ln -sf /proc/self/fd/2 /var/log/nginx/error.log \
-    && ln -sf /proc/self/fd/2 /var/log/php7.3-fpm.log
+    && ln -sf /proc/self/fd/1 /var/log/nginx/error.log \
+    && ln -sf /proc/self/fd/1 /var/log/php7.3-fpm.log
 
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}

@@ -4,18 +4,19 @@ program_name="zm-config"
 
 ## Link ZoneMinder config and data folders
 
-if [ ! -f "/config/zm.conf" ]; then
+if [ "${ZM_FIRST_RUN-0}" -eq "1" ]; then
   echo "Configuring ZoneMinder Configuration folder" | init "${program_name}"
   s6-setuidgid www-data \
-    cp -r /zoneminder/defaultconfig/* /config
-fi
+  cp -r /zoneminder/defaultconfig/* /config
 
-if [ ! -d "/data/events" ]; then
   echo "Configuring ZoneMinder Data folder" | init "${program_name}"
+  # Only configure data permissions once to prevent massive startup lag
+  chmod -R 755 /data
+  chown www-data:www-data /data
   s6-setuidgid www-data \
     mkdir -p \
-      /data/events \
-      /data/images
+    /data/events \
+    /data/images
 fi
 
 ## Configure ZoneMinder DB
