@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bash
+program_name="Nginx"
 
-sed -e "s/^/[service1] /"
-#logutil-service /log/nginx
+sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/nginx

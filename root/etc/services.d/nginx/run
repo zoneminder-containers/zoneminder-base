@@ -1,11 +1,10 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="Nginx"
 # ==============================================================================
 # Nginx
 # Runs Nginx
 # ==============================================================================
 
-echo "Starting Nginx..." | info "${program_name}"
+echo "Starting Nginx..."
 
-exec nginx -g 'daemon off;' | sed -u "s/^/[${program_name}] /" | cat
+exec nginx -g 'daemon off;'

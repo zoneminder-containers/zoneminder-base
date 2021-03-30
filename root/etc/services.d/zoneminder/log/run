@@ -1,3 +1,4 @@
 #!/usr/bin/with-contenv bash
+program_name="ZoneMinder"
 
-logutil-service /log/zoneminder-service
+sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/zoneminder-service

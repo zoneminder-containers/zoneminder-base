@@ -7,27 +7,27 @@ log() {
 # init service logtext
 init() {
   while read -r data_in; do
-    log "FIRSTRUN [${1}] ${data_in}"
+    log "FIRSTRUN ${data_in}"
   done
 }
 
 # info service logtext
 info() {
   while read -r data_in; do
-    log "INFO [${1}] ${data_in}"
+    log "INFO ${data_in}"
   done
 }
 
 # warn service logtext
 warn() {
   while read -r data_in; do
-    log "WARN [${1}] ${data_in}"
+    log "WARN ${data_in}"
   done
 }
 
 # warn service logtext
 error() {
   while read -r data_in; do
-    log "ERROR [${1}] ${data_in}"
+    log "ERROR ${data_in}"
   done
 }

@@ -1,10 +1,9 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="Nginx"
 # ==============================================================================
 # Nginx
 # Stops Nginx during container stop to allow shutdown to proceed
 # ==============================================================================
 
-echo "Stopping Nginx" | info "${program_name}"
+echo "Stopping Nginx" | info
 exec nginx -s quit

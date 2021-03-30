@@ -1,3 +1,4 @@
 #!/usr/bin/with-contenv bash
+program_name="fcgiwrap"
 
-logutil-service /log/fcgiwrap
+sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/fcgiwrap
