@@ -1,25 +1,27 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="ZoneMinder"
 # ==============================================================================
 # ZoneMinder
 # Runs ZoneMinder
 # ==============================================================================
 
-/bin/s6-svwait -u /var/run/s6/services/apache2
+/bin/s6-svwait -u /var/run/s6/services/nginx
+/bin/s6-svwait -u /var/run/s6/services/php-fpm
+/bin/s6-svwait -u /var/run/s6/services/fcgiwrap
+
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 /bin/s6-svwait -U /var/run/s6/services/mariadb-configure
 
-echo "Starting ZoneMinder..." | info "${program_name}"
+echo "Starting ZoneMinder..." | info
 s6-notifyoncheck -n 1000 s6-setuidgid www-data /usr/bin/zmpkg.pl start
 
 # Wait until service is alive before polling
 /bin/s6-svwait -U /var/run/s6/services/zoneminder
-echo "ZoneMinder is up! Proceeding to monitoring." | info "${program_name}"
+echo "ZoneMinder is up! Proceeding to monitoring." | info
 
 # Need to sleep to act like service is running
 # Terminate container if zm dies
 until [ "$(pgrep -fc /usr/bin/zm)" -lt "1" ]; do
   sleep 1
 done
-echo "ZoneMinder has crashed! Exiting..." | error "${program_name}"
+echo "ZoneMinder has crashed! Exiting..." | error

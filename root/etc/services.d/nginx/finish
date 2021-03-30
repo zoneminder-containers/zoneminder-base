@@ -1,11 +1,9 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
 # ==============================================================================
-# ZoneMinder
-# Take down the S6 supervision tree if db is no longer accessible
+# Nginx
+# Stops Nginx during container stop to allow shutdown to proceed
 # ==============================================================================
 
-echo "Stopping ZoneMinder" | info
-s6-setuidgid www-data /usr/bin/zmpkg.pl stop
-killall -9 socklog
-s6-svscanctl -t /var/run/s6/services
+echo "Stopping Nginx" | info
+exec nginx -s quit

@@ -1,6 +1,5 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="Mariadb-configure"
 # ==============================================================================
 # Mariadb
 # Stub service to monitor db status
@@ -12,9 +11,12 @@ program_name="Mariadb-configure"
 # Wait for db to be up before configuring
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
-if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm config > /dev/null 2>&1); then
-    echo "Creating ZoneMinder db for first run" | init "${program_name}"
+ if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm config > /dev/null 2>&1); then
+    echo "Creating ZoneMinder db for first run" | init
     mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
+
+    echo "Disabling file log to prevent duplicate logs from syslog" | init
+    mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = -5 WHERE Name = 'ZM_LOG_LEVEL_FILE';"
 fi
 
 if [[ -n "${ZM_SERVER_HOST}" ]] &&
@@ -23,7 +25,7 @@ if [[ -n "${ZM_SERVER_HOST}" ]] &&
   cut -f 2 |
   sed -n '2 p')" \
   == "0" ]; then
-    echo "Adding multi-server db entry" | init "${program_name}"
+    echo "Adding multi-server db entry" | init
     insert_command="LOCK TABLES \`Servers\` WRITE;"
     insert_command+="INSERT INTO \`Servers\` "
     insert_command+="(Protocol, Hostname, Port, PathToIndex, PathToZMS, PathToApi, Name, zmstats, zmaudit, zmtrigger, zmeventnotification)";
@@ -33,11 +35,11 @@ if [[ -n "${ZM_SERVER_HOST}" ]] &&
     mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "${insert_command}"
 fi
 
-echo "Upgrading db if necessary" | info "${program_name}"
-s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive | info "${program_name}"
+echo "Upgrading db if necessary" | info
+s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive | info
 
-echo "Refreshing db" | info "${program_name}"
-s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive -f | info "${program_name}"
+echo "Refreshing db" | info
+s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive -f | info
 
 # Notify s6 service is up
 fdmove 1 3 printf "done\n"

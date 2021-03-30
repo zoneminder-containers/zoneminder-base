@@ -1,3 +1,4 @@
 #!/usr/bin/with-contenv bash
+program_name="Mariadb-configure"
 
-logutil-service /log/mariadb-configure
+sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/mariadb-configure

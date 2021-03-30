@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+program_name="PHP-fpm"
+
+sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/php

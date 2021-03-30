@@ -1,11 +1,10 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
+program_name="fcgiwrap"
 # ==============================================================================
-# ZoneMinder
-# Take down the S6 supervision tree if db is no longer accessible
+# fcgiwrap
+# Terminate fcgiwrap
 # ==============================================================================
 
-echo "Stopping ZoneMinder" | info
-s6-setuidgid www-data /usr/bin/zmpkg.pl stop
-killall -9 socklog
-s6-svscanctl -t /var/run/s6/services
+echo "Stopping fcgiwrap" | info "${program_name}"
+killall -15 fcgiwrap
