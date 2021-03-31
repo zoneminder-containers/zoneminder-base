@@ -24,6 +24,7 @@ jobs:
             # Build tag
             ZM_VERSION=${GITHUB_REF##*/}
           fi
+          echo Building ZoneMinder ${ZM_VERSION}
           echo "::set-output name=zmversion::${ZM_VERSION}"
 
   build:
