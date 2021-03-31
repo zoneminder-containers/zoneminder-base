@@ -71,9 +71,9 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
         with:
-          key: ${{ matrix.arch }}-${ZM_VERSION}-{hash}
+          key: ${{ matrix.arch }}-${{ env.ZM_VERSION }}-{hash}
           restore-keys: |
-            ${{ matrix.arch }}-${ZM_VERSION}-
+            ${{ matrix.arch }}-${{ env.ZM_VERSION }}-
 
       - name: Build ZoneMinder
         run: |
