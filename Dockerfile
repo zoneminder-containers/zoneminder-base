@@ -227,14 +227,6 @@ RUN set -x \
 FROM base-image as final-build
 ARG ZM_VERSION
 
-# Install ZM Shared Library Dependencies
-RUN --mount=type=bind,target=/tmp/resolved_installable.txt,source=/resolved/resolved_installable.txt,from=shlibs-resolved,rw \
-    set -x \
-    && apt-get update \
-    && apt-get install -y \
-        $(grep -vE "^\s*#" /tmp/resolved_installable.txt  | tr "\n" " ") \
-    && rm -rf /var/lib/apt/lists/*
-
 # Add Nginx Repo
 RUN set -x \
     && echo "deb https://nginx.org/packages/mainline/debian/ buster nginx" > /etc/apt/sources.list.d/nginx.list \
@@ -260,6 +252,14 @@ RUN apt-get -y remove rsyslog || true
 RUN set -x \
     && groupmod -o -g 911 www-data \
     && usermod -o -u 911 www-data
+
+# Install ZM Shared Library Dependencies
+RUN --mount=type=bind,target=/tmp/resolved_installable.txt,source=/resolved/resolved_installable.txt,from=shlibs-resolved,rw \
+    set -x \
+    && apt-get update \
+    && apt-get install -y \
+        $(grep -vE "^\s*#" /tmp/resolved_installable.txt  | tr "\n" " ") \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install ZM
 COPY --chown=www-data --chmod=755 --from=builder /zminstall /
