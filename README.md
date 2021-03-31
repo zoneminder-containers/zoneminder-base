@@ -11,11 +11,12 @@ Logs are rotated according to the [TAI64N standard](http://skarnet.org/software/
 when there are a large number of files
 
 TODO:
-- Replace Apache2 with Nginx + php-fpm + php-fpm optimizations (In progress)
-- Fix logging weirdness
-
+- Tell me?
   
 DONE:
+- ~~Replace Apache2 with Nginx + php-fpm + php-fpm optimizations (In progress)~~
+- ~~Fix logging weirdness~~
+- ~~Install and automatically configure mail~~
 - ~~Figure out correct sql commands to automate multiserver support~~
 - ~~Go back to internal mariadb instead of external container~~ (will not do for multi-server support)
 - ~~Get finish scripts to output logs properly~~
@@ -29,16 +30,20 @@ DONE:
 
 Future Containers:
 1. 
+
 - Install ZM Event Server
 - Automatically enable Event Server and modify Servers table entry to enable Event Server
 
 2. Builds off 1
+
 - Install YOLO ML Models without opencv
 
 3.1. Builds off 2
+
 - Build and install standard opencv
 
 3.2. Builds off 2
+
 - Develop autobuilding opencv with cuda support container
 
 Considerations:
