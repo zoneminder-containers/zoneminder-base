@@ -293,11 +293,13 @@ RUN set -x \
     && chown -R nobody:nogroup \
         /log
 
-# Reconfigure nginx
+# Reconfigure nginx and php logs
+# Configure msmtp
 RUN set -x \
     && ln -sf /proc/self/fd/1 /var/log/nginx/access.log \
     && ln -sf /proc/self/fd/1 /var/log/nginx/error.log \
-    && ln -sf /proc/self/fd/1 /var/log/php7.3-fpm.log
+    && ln -sf /proc/self/fd/1 /var/log/php7.3-fpm.log \
+    && ln -sf /usr/bin/msmtp /usr/lib/sendmail
 
 LABEL \
     org.opencontainers.image.version=${ZM_VERSION}

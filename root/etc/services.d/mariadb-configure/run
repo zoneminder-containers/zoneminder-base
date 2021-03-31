@@ -11,12 +11,24 @@
 # Wait for db to be up before configuring
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
- if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm config > /dev/null 2>&1); then
-    echo "Creating ZoneMinder db for first run" | init
-    mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
+if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm config > /dev/null 2>&1); then
+  echo "Creating ZoneMinder db for first run" | init
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
 
-    echo "Disabling file log to prevent duplicate logs from syslog" | init
-    mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = -5 WHERE Name = 'ZM_LOG_LEVEL_FILE';"
+  echo "Disabling file log to prevent duplicate logs from syslog" | init
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = -5 WHERE Name = 'ZM_LOG_LEVEL_FILE';"
+
+  echo "Configuring msmtp..." | init
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = 1 WHERE Name = 'ZM_NEW_MAIL_MODULES';"
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = 1 WHERE Name = 'ZM_OPT_EMAIL';"
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = 1 WHERE Name = 'ZM_OPT_MESSAGE';"
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = 1 WHERE Name = 'ZM_SSMTP_MAIL';"
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = '/usr/bin/msmtp' WHERE Name = 'ZM_SSMTP_PATH';"
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_EMAIL_ADDRESS';"
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
+else
+  echo "Configuring ZoneMinder From Address..." | info
+  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
 fi
 
 if [[ -n "${ZM_SERVER_HOST}" ]] &&
