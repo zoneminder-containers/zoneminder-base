@@ -16,9 +16,11 @@ services:
 
   zoneminder:
     container_name: zoneminder
-    image: ghcr.io/zoneminder-containers/zoneminder-base:1.34.23
+    image: ghcr.io/zoneminder-containers/zoneminder-base
     restart: always
     stop_grace_period: 45s
+    depends_on:
+      - db
     ports:
       - 80:80
     networks:
