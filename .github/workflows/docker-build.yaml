@@ -67,11 +67,12 @@ jobs:
             env.BUILDKIT_STEP_LOG_MAX_SPEED=100000000
           install: true
 
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        # Ignore the failure of a step and avoid terminating the job.
+      - name: Cache Docker layers
+        uses: actions/cache@v2
         continue-on-error: true
         with:
-          key: ${{ matrix.arch }}-${{ env.ZM_VERSION }}-{hash}
+          path: /tmp/.buildx-cache
+          key: ${{ matrix.arch }}-${{ env.ZM_VERSION }}-${{ github.sha }}
           restore-keys: |
             ${{ matrix.arch }}-${{ env.ZM_VERSION }}-
 
@@ -84,8 +85,18 @@ jobs:
             --platform ${{ matrix.arch }} \
             --progress plain \
             --file ./Dockerfile \
+            --cache-from type=local,src=/tmp/.buildx-cache \
+            --cache-to type=local,dest=/tmp/.buildx-cache-new \
             --load \
             .
+
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run:
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Inspect
         run: |
