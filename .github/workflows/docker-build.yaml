@@ -349,7 +349,6 @@ jobs:
           echo ${{ matrix.registry.repo }}:latest published
 
       - name: Deploy Ref (ref)
-        if: ${{ startsWith(github.ref, 'refs/heads/') }}
         run: |
           set -x
           docker manifest create \
@@ -371,7 +370,6 @@ jobs:
           echo ${{ matrix.registry.repo }}:${GITHUB_REF##*/} published
 
       - name: Deploy Ref and Run Number (ref-run_number)
-        if: ${{ startsWith(github.ref, 'refs/heads/') }}
         run: |
           set -x
           docker manifest create \
