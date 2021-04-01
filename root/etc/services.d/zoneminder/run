@@ -25,3 +25,5 @@ until [ "$(pgrep -fc /usr/bin/zm)" -lt "1" ]; do
   sleep 1
 done
 echo "ZoneMinder has crashed! Exiting..." | error
+# This is required or the container hangs
+s6-svscanctl -t /var/run/s6/services
