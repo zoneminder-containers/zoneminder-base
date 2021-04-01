@@ -7,7 +7,7 @@ Early release at directly compiling and installling Zoneminder from source in co
 This will be an AIO container running all services required by Zoneminder in a single container, managed by s6 overlay.
 Logs are rotated according to the [TAI64N standard](http://skarnet.org/software/s6/s6-log.html)
 
-/data is not included in fix-permissions because it takes a substantial amount of time to run for the events folder
+`/data` is not included in fix-permissions because it takes a substantial amount of time to run for the events folder
 when there are a large number of files
 
 TODO:
