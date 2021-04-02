@@ -264,6 +264,7 @@ jobs:
       - publish
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
     strategy:
       matrix:
         registry:
@@ -280,11 +281,6 @@ jobs:
             repo: ghcr.io/zoneminder-containers/zoneminder-base
           }
     steps:
-      - name: Enable Experimental Docker Features
-        run: |
-          export DOCKER_CLI_EXPERIMENTAL="enabled"
-          echo "DOCKER_CLI_EXPERIMENTAL=${DOCKER_CLI_EXPERIMENTAL}" >> $GITHUB_ENV
-
       - name: Docker login
         run: |
           docker login ${{ matrix.registry.url }} -u ${{ secrets[matrix.registry.username] }} -p ${{ secrets[matrix.registry.password] }}
@@ -404,6 +400,7 @@ jobs:
       - create_manifest
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
     strategy:
       matrix:
         registry:
@@ -436,11 +433,6 @@ jobs:
             arch_friendly: arm64
           }
     steps:
-      - name: Enable Experimental Docker Features
-        run: |
-          export DOCKER_CLI_EXPERIMENTAL="enabled"
-          echo "DOCKER_CLI_EXPERIMENTAL=${DOCKER_CLI_EXPERIMENTAL}" >> $GITHUB_ENV
-
       - name: Docker login
         run: |
           docker login ${{ matrix.registry.url }} -u ${{ secrets[matrix.registry.username] }} -p ${{ secrets[matrix.registry.password] }}
