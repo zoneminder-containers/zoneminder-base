@@ -143,10 +143,17 @@ jobs:
         run: |
           docker load --input ci-${{ matrix.arch }}-${{ github.run_number }}.tar.gz
 
+      # Run test twice to see if restarts persist data
       - name: Run image
         run: |
           set -x
           docker tag ci:${{ github.run_number }} ci:latest
+          docker-compose -f docker-compose.test.yml up &
+          sleep 60
+          docker stop zoneminder
+          sleep 30
+          docker-compose -f docker-compose.test.yml down
+          sleep 15
           docker-compose -f docker-compose.test.yml up &
           sleep 60
           docker stop zoneminder
