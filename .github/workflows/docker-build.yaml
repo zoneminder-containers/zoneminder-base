@@ -152,7 +152,6 @@ jobs:
           sleep 60
           docker stop zoneminder
           docker-compose -f docker-compose.test.yml down
-          sleep 15
           docker-compose -f docker-compose.test.yml up &
           sleep 60
           docker stop zoneminder
