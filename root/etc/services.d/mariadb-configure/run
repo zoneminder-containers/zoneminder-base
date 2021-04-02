@@ -11,7 +11,7 @@
 # Wait for db to be up before configuring
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
-if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm config > /dev/null 2>&1); then
+if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm Config > /dev/null 2>&1); then
   echo "Creating ZoneMinder db for first run" | init
   mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
 
