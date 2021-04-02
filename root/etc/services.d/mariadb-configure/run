@@ -4,7 +4,7 @@
 # Mariadb
 # Stub service to monitor db status
 # ==============================================================================
-
+set -x
 # Reconfigure to be oneshot
 /bin/s6-svc -O /var/run/s6/services/mariadb-configure
 
