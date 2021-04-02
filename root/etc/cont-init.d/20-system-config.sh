@@ -16,12 +16,12 @@ echo -n "${PHP_VERSION}" > /var/run/s6/container_environment/PHP_VERSION
 echo "date.timezone = ${TZ}" >> /etc/php/"${PHP_VERSION}"/fpm/conf.d/30-zoneminder-time.ini
 
 echo "Applying PHP Optimizations" | info "[${program_name}] "
-sed -i "s/pm.max_children =.*/pm.max_children = 120/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
-sed -i "s/pm.start_servers =.*/pm.start_servers = 12/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
-sed -i "s/pm.min_spare_servers =.*/pm.min_spare_servers = 6/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
-sed -i "s/pm.max_spare_servers =.*/pm.max_spare_servers = 18/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
+sed -i "s/pm.max_children =.*/pm.max_children = ${PHP_MAX_CHILDREN}/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
+sed -i "s/pm.start_servers =.*/pm.start_servers = ${PHP_START_SERVERS}/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
+sed -i "s/pm.min_spare_servers =.*/pm.min_spare_servers = ${PHP_MIN_SPARE_SERVERS}/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
+sed -i "s/pm.max_spare_servers =.*/pm.max_spare_servers = ${PHP_MAX_SPARE_SERVERS}/" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
 
-echo "memory_limit = 2048M
-max_execution_time = 600
-max_input_vars = 3000
-max_input_time = 600" > /etc/php/"${PHP_VERSION}"/fpm/conf.d/30-zoneminder.ini
+echo "memory_limit = ${PHP_MEMORY_LIMIT}
+max_execution_time = ${PHP_MAX_EXECUTION_TIME}
+max_input_vars = ${PHP_MAX_INPUT_VARIABLES}
+max_input_time = ${PHP_MAX_INPUT_TIME}" > /etc/php/"${PHP_VERSION}"/fpm/conf.d/30-zoneminder.ini
