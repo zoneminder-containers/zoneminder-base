@@ -18,3 +18,4 @@ until ! (mysqladmin ping --connect-timeout 5 -u"${MYSQL_USER}" -p"${MYSQL_PASSWO
   sleep 1
 done
 echo "Mariadb could not be reached! Exiting..." | error
+echo -n "1" > /var/run/s6/container_environment/SHUTDOWN_REASON_DB_IS_DOWN

@@ -5,6 +5,13 @@
 # Take down the S6 supervision tree if db is no longer accessible
 # ==============================================================================
 
-echo "Stopping ZoneMinder" | info
-s6-setuidgid www-data /usr/bin/zmpkg.pl stop
+# Must run pkill to terminate container if db is down because zmpkg.pl stop
+# hangs in the event that the db is down when run
+if [ "${SHUTDOWN_REASON_DB_IS_DOWN}" -eq "1" ]; then
+  echo "Stopping ZoneMinder using pkill because db is down" | error
+  pkill -15 -f /usr/bin/zm
+else
+  echo "Stopping ZoneMinder" | info
+  s6-setuidgid www-data /usr/bin/zmpkg.pl stop
+fi
 s6-svscanctl -t /var/run/s6/services
