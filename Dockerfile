@@ -43,7 +43,8 @@ RUN set -x \
         dos2unix
 
 COPY root .
-RUN find . -type f -print0 | xargs -0 -n 1 -P 4 dos2unix
+RUN set -x \
+    && find . -type f -print0 | xargs -0 -n 1 -P 4 dos2unix
 
 #####################################################################
 #                                                                   #
@@ -107,12 +108,14 @@ RUN set -x \
 
 # Create runtime package
 RUN --mount=type=bind,target=/tmp/control,source=/zmsource/zoneminder_control,from=zm-source,rw \
-    equivs-build /tmp/control \
+    set -x \
+    && equivs-build /tmp/control \
     && ls | grep -P \(zoneminder_\)\(.*\)\(\.deb\) | xargs -I {} mv {} runtime-deps.deb
 
 # Create build-deps package
 RUN --mount=type=bind,target=/tmp/control,source=/zmsource/zoneminder_control,from=zm-source,rw \
-    mk-build-deps /tmp/control \
+    set -x \
+    && mk-build-deps /tmp/control \
     && ls | grep -P \(build-deps\)\(.*\)\(\.deb\) | xargs -I {} mv {} build-deps.deb
 
 #####################################################################
@@ -181,7 +184,8 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
     && make DESTDIR="/zminstall" install
 
 # Move default config location
-RUN mv /zminstall/config /zminstall/zoneminder/defaultconfig
+RUN set -x \
+    && mv /zminstall/config /zminstall/zoneminder/defaultconfig
 
 #####################################################################
 #                                                                   #
@@ -193,12 +197,14 @@ WORKDIR /shlibs
 
 COPY --from=zm-source /zmsource/zoneminder_control ./debian/control
 COPY --from=zm-source /zmsource/zoneminder_compat ./debian/compat
-RUN mv /zminstall ./debian/zoneminder
+RUN set -x \
+    && mv /zminstall ./debian/zoneminder
 
 # Move zoneminder install to directory where dh_shlibdeps can find it
 # Run dh_shlibdeps which will resolve all shared library dependencies
 # Alternative: dpkg-shlibdeps -O debian/zoneminder/zms << Only need zms executable for now
-RUN dh_shlibdeps \
+RUN set -x \
+    && dh_shlibdeps \
     && mv ./debian/zoneminder.substvars resolved.txt
 
 #####################################################################
@@ -246,7 +252,8 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 # Remove rsyslog as its unneeded and hangs the container on shutdown
-RUN apt-get -y remove rsyslog || true
+RUN set -x \
+    && apt-get -y remove rsyslog || true
 
 ## Create www-data user
 RUN set -x \
