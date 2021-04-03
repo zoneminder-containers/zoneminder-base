@@ -1,13 +1,10 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
+program_name="fcgiwrap"
 # ==============================================================================
-# Nginx
-# Runs Nginx
+# fcgiwrap
+# Terminate fcgiwrap
 # ==============================================================================
 
-echo "Waiting for ZoneMinder to start" | info
-/bin/s6-svwait -U /var/run/s6/services/zoneminder
-
-echo "Starting Nginx..." | info
-
-exec nginx -g 'daemon off;'
+echo "Stopping fcgiwrap" | info "${program_name} "
+killall -15 fcgiwrap
