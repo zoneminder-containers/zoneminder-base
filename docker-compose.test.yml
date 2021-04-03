@@ -21,7 +21,9 @@ services:
     deploy:
       restart_policy:
         condition: none
-    stop_grace_period: 45s
+    # Make grace period extremely long so test fails if
+    # container doesn't automatically terminate
+    stop_grace_period: 1h
     depends_on:
       - db
     ports:
