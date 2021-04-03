@@ -32,8 +32,8 @@ else
   mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
 fi
 
-if [[ -n "${ZM_SERVER_HOST}" ]] &&
-  [ "$(mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e \
+if [[ -n "${ZM_SERVER_HOST}" ]] \
+ && [ "$(mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e \
   "SELECT COUNT(*) FROM Servers WHERE Name = '${ZM_SERVER_HOST}';"  |
   cut -f 2 |
   sed -n '2 p')" \
