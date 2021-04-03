@@ -13,12 +13,8 @@
 /bin/s6-svwait -U /var/run/s6/services/mariadb-configure
 
 echo "Starting ZoneMinder..." | info
-# s6-svlisten -U -- /var/run/s6/services/zoneminder "" \
-# s6-notifyoncheck -n 1000 \
 s6-setuidgid www-data /usr/bin/zmpkg.pl start
 
-# Wait until service is alive before polling
-# /bin/s6-svwait -U /var/run/s6/services/zoneminder
 # zmpkg.pl is blocking so no need to wait
 echo "ZoneMinder is up! Proceeding to monitoring." | info
 # Notify s6 service is up
