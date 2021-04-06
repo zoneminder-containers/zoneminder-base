@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="fix-permissions"
+program_name="reconfigure-user"
 
 PUID=${PUID:-911}
 PGID=${PGID:-911}
