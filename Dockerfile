@@ -35,7 +35,7 @@ RUN set -x \
 # Alleviates issues when git uses CRLF on Windows                   #
 #                                                                   #
 #####################################################################
-FROM python:alpine as rootfs-converter
+FROM alpine:latest as rootfs-converter
 WORKDIR /rootfs
 
 RUN set -x \
