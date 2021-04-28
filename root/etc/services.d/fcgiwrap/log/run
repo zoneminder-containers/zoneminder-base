@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bash
 program_name="fcgiwrap"
 
-sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/fcgiwrap
+s6-format-filter "%1 %s" "[${program_name}]" | logutil-service /log/"${program_name}"

@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bash
-program_name="PHP-fpm"
+program_name="php-fpm"
 
-sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/php
+s6-format-filter "%1 %s" "[${program_name}]" | logutil-service /log/"${program_name}"

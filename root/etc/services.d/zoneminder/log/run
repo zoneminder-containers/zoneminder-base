@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bash
-program_name="ZoneMinder"
+program_name="zoneminder-service"
 
-sed -u "s/^/[${program_name}] /" | cat | logutil-service /log/zoneminder-service
+s6-format-filter "%1 %s" "[${program_name}]" | logutil-service /log/"${program_name}"
