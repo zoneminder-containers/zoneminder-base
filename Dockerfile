@@ -178,7 +178,7 @@ RUN --mount=type=bind,target=/zmbuild,source=/zmsource,from=zm-source,rw \
         -DZM_WEB_GROUP=www-data \
         -DCMAKE_INSTALL_SYSCONFDIR=config \
         -DZM_CONFIG_DIR=/config \
-        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         . \
     && make \
     && make DESTDIR="/zminstall" install
