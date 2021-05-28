@@ -3,48 +3,63 @@
 <a href="https://github.com/zoneminder-addons/zoneminder-base/actions"><img alt="GitHub Actions Build" src="https://github.com/zoneminder-addons/zoneminder-base/actions/workflows/docker-build.yaml/badge.svg"></a>
 <a href="https://hub.docker.com/r/yaoa/zoneminder-base"><img alt="Docker Hub Pulls" src="https://img.shields.io/docker/pulls/yaoa/zoneminder-base.svg"></a>
 
-Early release at directly compiling and installling Zoneminder from source in container.
-This will be an AIO container running all services required by Zoneminder in a single container, managed by s6 overlay.
+# Why
+This is an automatically updating ZoneMinder container built using s6-overlay with full support for all things containers.
+This aims to be the container that will never die as things will automatically keep themselves up to date and allow for
+easy selection/testing of various ZoneMinder versions.
+
+This container aims to follow all of the best practices of being a container meaning that the software and persistent
+data are separated, with the container remaining static. This means the container can easily be updated/restored provided
+the persistent data volumes are backed up. 
+
+Not only does this aim to follow all of the best practices, but this also aims to be
+the easiest container with nearly everything configurable through environment variables
+or automatically/preconfigured for you!
+
+There is also full support for multi-server setups with automation to link all servers!
+
+# How
+
+1. Install [Docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/)
+2. Download docker-compose.yml or docker-compose-multi.yml depending on single/multi server setups.
+3. Download .env
+4. Place all these files in the same folder and configure .env and the yml files as you please.
+5. Run `docker-compose up -d` to start.
+
+NOTE: The default docker-compose.yml files use the `latest` tag which runs the latest nightly builds of ZoneMinder.
+This is the bleeding edge and is not recommended for production!
+
+## Defining a Version
+
+1. Replace `latest` in the `docker-compose.yml` file with any ZoneMinder version you would like to run.
+Ex. `1.36.1`
+   
+Note: For those new to Docker, these values are known as the container tag.
+
+## Updates
+
+1. Replace the tag with the new version to update to, or for `latest`, simply continue to the next step.
+2. `docker-compose pull`
+3. `docker-compose up -d`
+
+
+# Helpful Info
 Logs are rotated according to the [TAI64N standard](http://skarnet.org/software/s6/s6-log.html)
 
 `/data` is not included in fix-permissions because it takes a substantial amount of time to run for the events folder
 when there are a large number of files
 
-TODO:
+# Issues:
 - Tell me?
-  
-DONE:
-- ~~Replace Apache2 with Nginx + php-fpm + php-fpm optimizations (In progress)~~
-- ~~Fix logging weirdness~~
-- ~~Install and automatically configure mail~~
-- ~~Figure out correct sql commands to automate multiserver support~~
-- ~~Go back to internal mariadb instead of external container~~ (will not do for multi-server support)
-- ~~Get finish scripts to output logs properly~~
-- ~~Fix ZM install/file directories (set to unified mount dir)~~
-- ~~Implement s6 overlay~~
-- ~~Automatically tag and release new ZM versions~~
-  - ~~PR file? Auto tag then build?~~
-- ~~Implement CI/CD~~
-- ~~Find way to parse control file to dynamically install deps (Need to install both Depends and Recommends)~~
-    - ~~Consider writing python script to parse control file and output commands to a bash script~~
 
-Future Containers:
-1. 
+# Future Containers:
 
-- Install ZM Event Server
-- Automatically enable Event Server and modify Servers table entry to enable Event Server
-
-2. Builds off 1
-
-- Install YOLO ML Models without opencv
-
-3.1. Builds off 2
-
-- Build and install standard opencv
-
-3.2. Builds off 2
-
-- Develop autobuilding opencv with cuda support container
-
-Considerations:
-- Alpine
+1. [eventserver-base](https://github.com/zoneminder-containers/eventserver-base) (Currently WIP)
+  - Install ZM Event Server
+  - Automatically enable Event Server and modify Servers table entry to enable Event Server
+2. eventserver-mlapi-base
+  - Install YOLO ML Models without opencv
+3. eventserver-mlapi
+  - Build and install standard opencv
+4. eventserver-mlapi-cuda
+  - Develop autobuilding opencv with cuda support container
