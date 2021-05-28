@@ -25,7 +25,6 @@ COPY parse_control.py .
 # This parses the control file located at distros/ubuntu2004/control
 # It outputs zoneminder_control which only includes requirements for zoneminder
 # This prevents equivs-build from being confused when there are multiple packages
-# Also outputz zoneminder_compat for shlib resolver
 RUN set -x \
     && python3 -u parse_control.py
 
@@ -189,42 +188,6 @@ RUN set -x \
 
 #####################################################################
 #                                                                   #
-# Resolve shlib:Depends to resolved.txt                             #
-#                                                                   #
-#####################################################################
-FROM builder as shlibs-resolver
-WORKDIR /shlibs
-
-COPY --from=zm-source /zmsource/zoneminder_control ./debian/control
-COPY --from=zm-source /zmsource/zoneminder_compat ./debian/compat
-RUN set -x \
-    && mv /zminstall ./debian/zoneminder
-
-# Move zoneminder install to directory where dh_shlibdeps can find it
-# Run dh_shlibdeps which will resolve all shared library dependencies
-# Alternative: dpkg-shlibdeps -O debian/zoneminder/zms << Only need zms executable for now
-RUN set -x \
-    && dh_shlibdeps \
-    && mv ./debian/zoneminder.substvars resolved.txt
-
-#####################################################################
-#                                                                   #
-# Format resolved.txt for installation                              #
-#                                                                   #
-#####################################################################
-FROM python:alpine as shlibs-resolved
-WORKDIR /resolved
-
-COPY --from=shlibs-resolver /shlibs/resolved.txt .
-COPY parse_shlibs.py .
-
-# This reads resolved.txt and writes resolved_installable.txt for installing
-# with apt-get install
-RUN set -x \
-    && python3 -u parse_shlibs.py
-
-#####################################################################
-#                                                                   #
 # Install ZoneMinder                                                #
 # Create required folders                                           #
 # Install additional dependencies                                   #
@@ -259,14 +222,6 @@ RUN set -x \
 RUN set -x \
     && groupmod -o -g 911 www-data \
     && usermod -o -u 911 www-data
-
-# Install ZM Shared Library Dependencies
-RUN --mount=type=bind,target=/tmp/resolved_installable.txt,source=/resolved/resolved_installable.txt,from=shlibs-resolved,rw \
-    set -x \
-    && apt-get update \
-    && apt-get install -y \
-        $(grep -vE "^\s*#" /tmp/resolved_installable.txt  | tr "\n" " ") \
-    && rm -rf /var/lib/apt/lists/*
 
 # Install ZM
 COPY --chown=www-data --chmod=755 --from=builder /zminstall /
