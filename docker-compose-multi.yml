@@ -2,7 +2,6 @@ version: '3'
 
 services:
   db:
-    container_name: db
     image: mariadb
     restart: always
     networks:
@@ -15,7 +14,6 @@ services:
       - ./.env
 
   zoneminder1:
-    container_name: zoneminder1
     image: ghcr.io/zoneminder-containers/zoneminder-base:latest
     restart: always
     stop_grace_period: 45s
@@ -39,7 +37,6 @@ services:
       - ZM_SERVER_HOST=zoneminder1
 
   zoneminder2:
-    container_name: zoneminder2
     image: ghcr.io/zoneminder-containers/zoneminder-base:latest
     restart: always
     stop_grace_period: 45s
