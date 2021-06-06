@@ -26,7 +26,24 @@ if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm Con
   insert_command+="UPDATE Config SET Value = '/usr/bin/msmtp' WHERE Name = 'ZM_SSMTP_PATH';"
   insert_command+="UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_EMAIL_ADDRESS';"
   insert_command+="UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
+
+  echo "Configuring ZoneMinder API settings..." | init
+  insert_command+="UPDATE Config SET Value = 'builtin' WHERE Name = 'ZM_AUTH_TYPE';"
+  insert_command+="UPDATE Config SET Value = 'hashed' WHERE Name = 'ZM_AUTH_RELAY';"
+  insert_command+="UPDATE Config SET Value = 1 WHERE Name = 'ZM_OPT_USE_API';"
+  insert_command+="UPDATE Config SET Value = 0 WHERE Name = 'ZM_AUTH_HASH_IPS';"
+
+  echo "Generating random secure string for ZoneMinder API..." | init
+  random_string=$(
+    wget -qO - \
+      "https://www.random.org/strings/?num=4&len=20&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new" \
+    | tr -d '\n' \
+  )
+  insert_command+="UPDATE Config SET Value = '${random_string}' WHERE Name = 'ZM_AUTH_HASH_SECRET';"
+
+  echo "Applying db changes..." | init
   mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "${insert_command}"
+
 else
   echo "Configuring ZoneMinder Email From Address..." | info
   mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
