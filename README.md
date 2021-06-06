@@ -2,6 +2,7 @@
 
 <a href="https://github.com/zoneminder-addons/zoneminder-base/actions"><img alt="GitHub Actions Build" src="https://github.com/zoneminder-addons/zoneminder-base/actions/workflows/docker-build.yaml/badge.svg"></a>
 <a href="https://hub.docker.com/r/yaoa/zoneminder-base"><img alt="Docker Hub Pulls" src="https://img.shields.io/docker/pulls/yaoa/zoneminder-base.svg"></a>
+<img src="https://img.shields.io/badge/Status-Completed-brightgreen" alt="Status">
 
 # Why
 This is an automatically updating ZoneMinder container built using s6-overlay with full support for all things containers.
