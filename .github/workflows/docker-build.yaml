@@ -360,6 +360,24 @@ jobs:
           docker manifest push ${{ matrix.registry.repo }}:latest
           echo ${{ matrix.registry.repo }}:latest published
 
+      - name: Deploy Latest Commit Sha (zm_sha)
+        run: |
+          set -x
+          docker manifest create \
+            ${{ matrix.registry.repo }}:${ZM_VERSION} \
+            ${{ matrix.registry.repo }}:i386-${{ github.run_number }} \
+            ${{ matrix.registry.repo }}:amd64-${{ github.run_number }} \
+            ${{ matrix.registry.repo }}:armv7-${{ github.run_number }} \
+            ${{ matrix.registry.repo }}:arm64-${{ github.run_number }}
+
+          docker manifest annotate ${{ matrix.registry.repo }}:${ZM_VERSION} \
+            ${{ matrix.registry.repo }}:armv7-${{ github.run_number }} --arch arm --variant v7
+          docker manifest annotate ${{ matrix.registry.repo }}:${ZM_VERSION} \
+            ${{ matrix.registry.repo }}:arm64-${{ github.run_number }} --arch arm64 --variant v8
+
+          docker manifest push ${{ matrix.registry.repo }}:${ZM_VERSION}
+          echo ${{ matrix.registry.repo }}:${ZM_VERSION} published
+
       - name: Deploy Ref (ref)
         run: |
           set -x
