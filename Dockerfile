@@ -266,7 +266,7 @@ RUN set -x \
     && rm -rf /etc/nginx/conf.d
 
 LABEL \
-    org.opencontainers.image.version=${ZM_VERSION}
+    com.github.alexyao2015.zoneminder_version=${ZM_VERSION}
 
 # System Variables
 ENV \
