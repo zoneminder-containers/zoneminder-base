@@ -11,12 +11,14 @@
 # Wait for db to be up before configuring
 /bin/s6-svwait -U /var/run/s6/services/mariadb
 
+insert_command=""
+
 if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm Config > /dev/null 2>&1); then
   echo "Creating ZoneMinder db for first run" | init
   mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
 
   echo "Disabling file log to prevent duplicate logs from syslog" | init
-  insert_command="UPDATE Config SET Value = -5 WHERE Name = 'ZM_LOG_LEVEL_FILE';"
+  insert_command+="UPDATE Config SET Value = -5 WHERE Name = 'ZM_LOG_LEVEL_FILE';"
 
   echo "Configuring ZoneMinder Email settings..." | init
   insert_command+="UPDATE Config SET Value = 1 WHERE Name = 'ZM_NEW_MAIL_MODULES';"
@@ -37,12 +39,11 @@ if ! (mysqlshow -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm Con
   random_string=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 80 | head -n 1)
   insert_command+="UPDATE Config SET Value = '${random_string}' WHERE Name = 'ZM_AUTH_HASH_SECRET';"
 
-  echo "Applying db changes..." | init
-  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "${insert_command}"
-
 else
+
   echo "Configuring ZoneMinder Email From Address..." | info
-  mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
+  insert_command+="UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
+
 fi
 
 if [[ -n "${ZM_SERVER_HOST}" ]] \
@@ -52,14 +53,14 @@ if [[ -n "${ZM_SERVER_HOST}" ]] \
   sed -n '2 p')" \
   == "0" ]; then
     echo "Adding multi-server db entry" | init
-    insert_command="LOCK TABLES \`Servers\` WRITE;"
     insert_command+="INSERT INTO \`Servers\` "
     insert_command+="(Protocol, Hostname, Port, PathToIndex, PathToZMS, PathToApi, Name, zmstats, zmaudit, zmtrigger, zmeventnotification)";
     insert_command+=" VALUES "
     insert_command+="('http','${ZM_SERVER_HOST}',80,'/index.php','/cgi-bin/nph-zms','/zm/api','${ZM_SERVER_HOST}',1,1,1,0);";
-    insert_command+="UNLOCK TABLES;"
-    mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "${insert_command}"
 fi
+
+echo "Applying db changes..." | init
+mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e "${insert_command}"
 
 echo "Upgrading db if necessary" | info
 s6-setuidgid www-data /usr/bin/zmupdate.pl -nointeractive | info
