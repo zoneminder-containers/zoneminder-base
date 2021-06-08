@@ -12,7 +12,7 @@ services:
     environment:
       - MYSQL_DATABASE=zm
     env_file:
-      - ./.env
+      - ../.env
 
   zoneminder:
     build:
@@ -33,7 +33,7 @@ services:
       - type: tmpfs
         target: /dev/shm
         tmpfs:
-          size: 1G
+          size: 1000000000
     env_file:
       - ../.env
 #    environment:
