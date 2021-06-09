@@ -3,6 +3,7 @@ version: '3'
 services:
   db:
     image: mariadb
+    container_name: zoneminder_maridb_containerized
     restart: always
     networks:
       - zoneminder
@@ -15,12 +16,13 @@ services:
 
   zoneminder:
     image: ghcr.io/zoneminder-containers/zoneminder-base:latest
+    container_name: zoneminder_containerized
     restart: always
+    ports:
+      - "${NGINX_EXPOSE_PORT}:80"
     stop_grace_period: 45s
     depends_on:
       - db
-    ports:
-      - 80:80
     networks:
       - zoneminder
     volumes:
