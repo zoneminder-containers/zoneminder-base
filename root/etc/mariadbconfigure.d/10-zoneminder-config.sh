@@ -7,7 +7,7 @@
 
 insert_command=""
 
-if ! (mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" -e 'USE zm;'); then
+if ! (mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" -e 'USE zm; SELECT * FROM Config LIMIT 1' > /dev/null 2>&1); then
   echo "Creating ZoneMinder db for first run" | init
   mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
 
