@@ -5,11 +5,9 @@
 # Runs ZoneMinder
 # ==============================================================================
 
-/bin/s6-svwait -u /var/run/s6/services/nginx
-/bin/s6-svwait -u /var/run/s6/services/php-fpm
-/bin/s6-svwait -u /var/run/s6/services/fcgiwrap
-
+echo "Waiting for MariaDB to start" | info
 /bin/s6-svwait -U /var/run/s6/services/mariadb
+echo "Waiting for mariadb-configure to complete..." | info
 /bin/s6-svwait -U /var/run/s6/services/mariadb-configure
 
 echo "Starting ZoneMinder..." | info
