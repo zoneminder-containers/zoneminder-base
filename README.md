@@ -33,6 +33,7 @@ This is the bleeding edge and is not recommended for production!
 ## Defining a Version
 
 1. Replace `latest` in the `docker-compose.yml` file with any ZoneMinder version you would like to run.
+You can find all available releases [here](https://github.com/zoneminder-containers/zoneminder-base/releases).
 Ex. `1.36.1`
    
 Note: For those new to Docker, these values are known as the container tag.
