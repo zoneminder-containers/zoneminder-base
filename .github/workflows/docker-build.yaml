@@ -254,7 +254,7 @@ jobs:
           docker push ${{ matrix.registry.repo }}:${{ matrix.arch }}-${GITHUB_REF##*/}-${ZM_VERSION}
           echo ${{ matrix.registry.repo }}:${{ matrix.arch }}-${GITHUB_REF##*/}-${ZM_VERSION} published
 
-      - name: Deploy Latest (latest)
+      - name: Deploy Latest (arch-latest)
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           set -x
