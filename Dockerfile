@@ -85,11 +85,6 @@ RUN set -x \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Required for libmp4v2-dev
-RUN set -x \
-    && echo "deb [trusted=yes] https://zmrepo.zoneminder.com/debian/release-1.34 buster/" > /etc/apt/sources.list.d/zoneminder.list \
-    && wget -O - https://zmrepo.zoneminder.com/debian/archive-keyring.gpg | apt-key add -
-
 #####################################################################
 #                                                                   #
 # Build packages containing build and runtime dependencies          #
