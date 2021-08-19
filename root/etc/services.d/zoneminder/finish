@@ -7,8 +7,7 @@
 
 # Must run pkill to terminate container if db is down because zmpkg.pl stop
 # hangs in the event that the db is down when run
-if [[ -n "${SHUTDOWN_REASON_DB_IS_DOWN}" ]] \
-  && [ "${SHUTDOWN_REASON_DB_IS_DOWN}" -eq "1" ]; then
+if [ "${SHUTDOWN_REASON_DB_IS_DOWN:-0}" -eq "1" ]; then
   echo "Stopping ZoneMinder using pkill because db is down" | error
   pkill -15 -f /usr/bin/zm
 else
