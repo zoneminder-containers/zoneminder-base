@@ -130,6 +130,13 @@ RUN --mount=type=bind,target=/tmp/runtime-deps.deb,source=/packages/runtime-deps
         ./tmp/runtime-deps.deb \
     && rm -rf /var/lib/apt/lists/*
 
+# Remove "zoneminder" shim package from runtime-deps.deb and
+# set all runtime dependencies installed by package to manually installed
+# Allows removing individual packages without including all packages in autoremove
+RUN set -x \
+    && apt-get -y remove zoneminder \
+    && apt-mark manual $(apt-get -s autoremove 2>/dev/null | awk '/^Remv / { print $2 }')
+
 #####################################################################
 #                                                                   #
 # Install runtime + build dependencies                              #
