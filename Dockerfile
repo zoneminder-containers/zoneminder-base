@@ -108,6 +108,10 @@ RUN set -x \
     && equivs-build /tmp/control \
     && ls | grep -P \(zoneminder_\)\(.*\)\(\.deb\) | xargs -I {} mv {} runtime-deps.deb
 
+# Remove compat file when building build-deps
+RUN set -x \
+    && rm -rf /usr/share/equivs/template/debian/compat
+
 # Create build-deps package
 RUN set -x \
     && mk-build-deps /tmp/control \
