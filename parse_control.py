@@ -81,5 +81,5 @@ control_pkg = get_package(load_control(), "zoneminder")
 with open("zoneminder_control", "w") as file_obj:
     file_obj.write(control_pkg)
 
-# Required for shlib resolving
+# Used as default for equivs-build template due to bug
 copyfile(path.join(locate_distro(), "compat"), "zoneminder_compat")
