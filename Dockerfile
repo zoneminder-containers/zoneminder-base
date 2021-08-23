@@ -100,17 +100,17 @@ RUN set -x \
     && apt-get install -y \
         devscripts
 
-COPY --from=zm-source /zmsource/zoneminder_control /tmp/debian/control
-COPY --from=zm-source /zmsource/zoneminder_compat /tmp/debian/compat
+COPY --from=zm-source /zmsource/zoneminder_control /tmp/control
+COPY --from=zm-source /zmsource/zoneminder_compat /usr/share/equivs/template/debian/compat
 
 # Create runtime package
 RUN set -x \
-    && equivs-build /tmp/debian \
+    && equivs-build /tmp/control \
     && ls | grep -P \(zoneminder_\)\(.*\)\(\.deb\) | xargs -I {} mv {} runtime-deps.deb
 
 # Create build-deps package
 RUN set -x \
-    && mk-build-deps /tmp/debian \
+    && mk-build-deps /tmp/control \
     && ls | grep -P \(build-deps\)\(.*\)\(\.deb\) | xargs -I {} mv {} build-deps.deb
 
 #####################################################################
