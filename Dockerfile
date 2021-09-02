@@ -101,16 +101,12 @@ RUN set -x \
         devscripts
 
 COPY --from=zm-source /zmsource/zoneminder_control /tmp/control
-COPY --from=zm-source /zmsource/zoneminder_compat /usr/share/equivs/template/debian/compat
 
 # Create runtime package
-RUN set -x \
+RUN --mount=type=bind,target=/usr/share/equivs/template/debian/compat,source=/zmsource/zoneminder_compat,from=zm-source,rw \
+    set -x \
     && equivs-build /tmp/control \
     && ls | grep -P \(zoneminder_\)\(.*\)\(\.deb\) | xargs -I {} mv {} runtime-deps.deb
-
-# Remove compat file when building build-deps
-RUN set -x \
-    && rm -rf /usr/share/equivs/template/debian/compat
 
 # Create build-deps package
 RUN set -x \
@@ -267,7 +263,6 @@ RUN set -x \
 RUN set -x \
     && ln -sf /proc/self/fd/1 /var/log/nginx/access.log \
     && ln -sf /proc/self/fd/1 /var/log/nginx/error.log \
-    && ln -sf /proc/self/fd/1 /var/log/php7.3-fpm.log \
     && ln -sf /usr/bin/msmtp /usr/lib/sendmail \
     && ln -sf /usr/bin/msmtp /usr/sbin/sendmail \
     && rm -rf /etc/nginx/conf.d
