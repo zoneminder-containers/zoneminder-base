@@ -14,4 +14,11 @@ else
   echo "Stopping ZoneMinder" | info
   s6-setuidgid www-data /usr/bin/zmpkg.pl stop
 fi
+
+# Socklog randomly started hanging container shutdown at "Docker Build #461"
+# The container will not stop until socklog is forcibly killed like this
+# Dirty hack to allow the container to shutdown
+echo "Stopping socklog" | error
+pkill -9 -f socklog
+
 s6-svscanctl -t /var/run/s6/services
