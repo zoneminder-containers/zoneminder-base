@@ -55,7 +55,7 @@ RUN set -x \
 # Prepare base-image with core programs + repository                #
 #                                                                   #
 #####################################################################
-FROM debian:buster as base-image-core
+FROM debian:bullseye as base-image-core
 
 # Skip interactive post-install scripts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -83,15 +83,16 @@ RUN set -x \
     && apt-get install -y \
         devscripts
 
+COPY --from=zm-source /zmsource/zoneminder_control /tmp/control
+
 # Create runtime package
-RUN --mount=type=bind,target=/tmp/control,source=/zmsource/zoneminder_control,from=zm-source,rw \
+RUN --mount=type=bind,target=/usr/share/equivs/template/debian/compat,source=/zmsource/zoneminder_compat,from=zm-source,rw \
     set -x \
     && equivs-build /tmp/control \
     && ls | grep -P \(zoneminder_\)\(.*\)\(\.deb\) | xargs -I {} mv {} runtime-deps.deb
 
 # Create build-deps package
-RUN --mount=type=bind,target=/tmp/control,source=/zmsource/zoneminder_control,from=zm-source,rw \
-    set -x \
+RUN set -x \
     && mk-build-deps /tmp/control \
     && ls | grep -P \(build-deps\)\(.*\)\(\.deb\) | xargs -I {} mv {} build-deps.deb
 
@@ -183,8 +184,8 @@ ARG ZM_VERSION
 
 # Add Nginx Repo
 RUN set -x \
-    && echo "deb https://nginx.org/packages/mainline/debian/ buster nginx" > /etc/apt/sources.list.d/nginx.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+    && echo "deb https://nginx.org/packages/mainline/debian/ bullseye nginx" > /etc/apt/sources.list.d/nginx.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABF5BD827BD9BF62
 
 # Install additional services required by ZM ("Recommends")
 # PHP-fpm not required for apache
