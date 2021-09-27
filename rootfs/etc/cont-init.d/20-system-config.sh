@@ -25,3 +25,6 @@ echo "memory_limit = ${PHP_MEMORY_LIMIT}
 max_execution_time = ${PHP_MAX_EXECUTION_TIME}
 max_input_vars = ${PHP_MAX_INPUT_VARIABLES}
 max_input_time = ${PHP_MAX_INPUT_TIME}" > /etc/php/"${PHP_VERSION}"/fpm/conf.d/30-zoneminder.ini
+
+echo "Redirecting PHP Logs to stdout" | info "[${program_name}] "
+ln -sf /proc/self/fd/1 /var/log/php"${PHP_VERSION}"-fpm.log

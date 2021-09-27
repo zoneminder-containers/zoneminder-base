@@ -246,7 +246,6 @@ RUN set -x \
 RUN set -x \
     && ln -sf /proc/self/fd/1 /var/log/nginx/access.log \
     && ln -sf /proc/self/fd/1 /var/log/nginx/error.log \
-    && ln -sf /proc/self/fd/1 /var/log/php7.3-fpm.log \
     && ln -sf /usr/bin/msmtp /usr/lib/sendmail \
     && ln -sf /usr/bin/msmtp /usr/sbin/sendmail \
     && rm -rf /etc/nginx/conf.d
