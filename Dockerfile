@@ -30,6 +30,23 @@ RUN set -x \
 
 #####################################################################
 #                                                                   #
+# Convert rootfs to LF using dos2unix                               #
+# Alleviates issues when git uses CRLF on Windows                   #
+#                                                                   #
+#####################################################################
+FROM alpine:latest as rootfs-converter
+WORKDIR /rootfs
+
+RUN set -x \
+    && apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+        dos2unix
+
+COPY rootfs .
+RUN set -x \
+    && find . -type f -print0 | xargs -0 -n 1 -P 4 dos2unix
+
+#####################################################################
+#                                                                   #
 # Download and extract s6 overlay                                   #
 #                                                                   #
 #####################################################################
@@ -216,7 +233,7 @@ COPY --chown=www-data --chmod=755 --from=builder /zminstall /
 COPY --from=s6downloader /s6downloader /
 
 # Copy rootfs
-COPY rootfs /
+COPY --from=rootfs-converter /rootfs /
 
 # Create required folders
 RUN set -x \
