@@ -10,6 +10,6 @@ echo "Starting fcgiwrap..." | info
 # Remove old socket if existing
 rm /zoneminder/run/fcgiwrap.socket > /dev/null 2>&1
 
-s6-setuidgid www-data \
-    fdmove -c 2 1 \
+exec s6-setuidgid www-data \
+    fdmove 2 1 \
       fcgiwrap -f -c "${FCGIWRAP_PROCESSES}" -s unix:/zoneminder/run/fcgiwrap.socket
