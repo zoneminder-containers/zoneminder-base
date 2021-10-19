@@ -7,5 +7,5 @@
 
 echo "Starting PHP-fpm..." | info
 
-fdmove -c 2 1 \
+exec fdmove 2 1 \
   /usr/sbin/php-fpm"${PHP_VERSION}" --nodaemonize --fpm-config /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
