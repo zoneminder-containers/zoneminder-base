@@ -17,9 +17,14 @@ if [ "${PUID}" -ne 911 ] || [ "${PGID}" -ne 911 ]; then
   chown -R www-data:www-data \
     /config \
     /zoneminder
+  chmod -R 755 \
+    /config \
+    /zoneminder
 else
   echo "Setting permissions for user www-data" | info "[${program_name}] "
   chown -R www-data:www-data \
+    /config
+  chmod -R 755 \
     /config
 fi
 
