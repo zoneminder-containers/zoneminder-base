@@ -221,19 +221,28 @@ RUN set -x \
 RUN set -x \
     && apt-get -y remove rsyslog || true
 
-## Create www-data user
-RUN set -x \
-    && groupmod -o -g 911 www-data \
-    && usermod -o -u 911 www-data
-
 # Install ZM
-COPY --chown=www-data --chmod=755 --from=builder /zminstall /
+COPY --from=builder /zminstall /
 
 # Install s6 overlay
 COPY --from=s6downloader /s6downloader /
 
 # Copy rootfs
 COPY --from=rootfs-converter /rootfs /
+
+## Create www-data user
+RUN set -x \
+    && groupmod -o -g 911 www-data \
+    && usermod -o -u 911 www-data
+
+# Reconfigure nginx and php logs
+# Configure msmtp
+RUN set -x \
+    && ln -sf /proc/self/fd/1 /var/log/nginx/access.log \
+    && ln -sf /proc/self/fd/1 /var/log/nginx/error.log \
+    && ln -sf /usr/bin/msmtp /usr/lib/sendmail \
+    && ln -sf /usr/bin/msmtp /usr/sbin/sendmail \
+    && rm -rf /etc/nginx/conf.d
 
 # Create required folders
 RUN set -x \
@@ -257,15 +266,6 @@ RUN set -x \
         /log \
     && chown -R nobody:nogroup \
         /log
-
-# Reconfigure nginx and php logs
-# Configure msmtp
-RUN set -x \
-    && ln -sf /proc/self/fd/1 /var/log/nginx/access.log \
-    && ln -sf /proc/self/fd/1 /var/log/nginx/error.log \
-    && ln -sf /usr/bin/msmtp /usr/lib/sendmail \
-    && ln -sf /usr/bin/msmtp /usr/sbin/sendmail \
-    && rm -rf /etc/nginx/conf.d
 
 LABEL \
     com.github.alexyao2015.zoneminder_version=${ZM_VERSION}
