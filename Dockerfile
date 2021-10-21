@@ -267,9 +267,6 @@ RUN set -x \
     && chown -R nobody:nogroup \
         /log
 
-LABEL \
-    com.github.alexyao2015.zoneminder_version=${ZM_VERSION}
-
 # System Variables
 ENV \
     S6_FIX_ATTRS_HIDDEN=1 \
@@ -295,5 +292,10 @@ ENV \
     PGID=911 \
     TZ="America/Chicago" \
     USE_SECURE_RANDOM_ORG=1
+
+LABEL \
+    com.github.alexyao2015.zoneminder_version=${ZM_VERSION}
+
+EXPOSE 80/tcp
 
 CMD ["/init"]
