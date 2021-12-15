@@ -19,8 +19,6 @@ services:
       dockerfile: ./Dockerfile
     restart: always
     stop_grace_period: 45s
-    depends_on:
-      - db
     ports:
       - 80:80
     networks:
@@ -35,6 +33,7 @@ services:
           size: 1000000000
     env_file:
       - ../.env
+#    command: ["/bin/sh", "-ec", "while :; do sleep 5 ; done"]
 #    environment:
 #      - ZM_SERVER_HOST=zoneminder1
 

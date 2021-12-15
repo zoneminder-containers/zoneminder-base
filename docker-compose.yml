@@ -1,6 +1,9 @@
 version: '3.6'
 
 services:
+  # !! WARNING: !!
+  # If using linuxserver/mariadb, you will need to add
+  # skip-log-bin to mysqld and disable all log_bin options
   db:
     image: mariadb
     restart: always

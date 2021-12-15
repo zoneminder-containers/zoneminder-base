@@ -11,5 +11,5 @@ echo "Starting fcgiwrap..." | info
 rm /zoneminder/run/fcgiwrap.socket > /dev/null 2>&1
 
 exec s6-setuidgid www-data \
-    fdmove 2 1 \
+    fdmove -c 2 1 \
       fcgiwrap -f -c "${FCGIWRAP_PROCESSES}" -s unix:/zoneminder/run/fcgiwrap.socket
