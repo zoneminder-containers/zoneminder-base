@@ -51,6 +51,8 @@ Logs are rotated according to the [TAI64N standard](http://skarnet.org/software/
 `/data` is not included in fix-permissions because it takes a substantial amount of time to run for the events folder
 when there are a large number of files
 
+The web interface is accessible at the root directory. Do not use the /zm subdirectory to access the interface.
+
 # Issues:
 - Tell me?
 
