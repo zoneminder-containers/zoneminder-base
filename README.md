@@ -1,6 +1,6 @@
 # Zoneminder Container
 
-[![Docker Build](https://github.com/zoneminder-containers/zoneminder-base/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/zoneminder-containers/eventserver-base/actions/workflows/docker-build.yaml)
+[![Docker Build](https://github.com/zoneminder-containers/zoneminder-base/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/zoneminder-containers/zoneminder-base/actions/workflows/docker-build.yaml)
 [![DockerHub Pulls](https://img.shields.io/docker/pulls/yaoa/zoneminder-base.svg)](https://hub.docker.com/r/yaoa/zoneminder-base)
 ![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
 
