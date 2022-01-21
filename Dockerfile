@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:experimental
 ARG ZM_VERSION=master
 ARG S6_ARCH=amd64
+ARG S6_OVERLAY_VERSION="v2.2.0.3"
 
 #####################################################################
 #                                                                   #
@@ -53,10 +54,11 @@ RUN set -x \
 FROM alpine:latest as s6downloader
 # Required to persist build arg
 ARG S6_ARCH
+ARG S6_OVERLAY_VERSION
 WORKDIR /s6downloader
 
 RUN set -x \
-    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/latest/download/s6-overlay-${S6_ARCH}.tar.gz" \
+    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/${S6_OVERLAY_VERSION}/download/s6-overlay-${S6_ARCH}.tar.gz" \
     && mkdir -p /tmp/s6 \
     && tar zxvf /tmp/s6-overlay.tar.gz -C /tmp/s6 \
     && cp -r /tmp/s6/* .
