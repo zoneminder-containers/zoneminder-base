@@ -286,6 +286,19 @@ jobs:
             --image-name ci:${{ github.run_number }} \
             --latest
 
+      # if its tagged, push to release
+      - name: Push image (tag)
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          ./publish.py \
+            --tag release \
+            --repo ${{ matrix.registry.repo }} \
+            --image \
+            --github-sha ${ZM_VERSION} \
+            --run-number ${{ github.run_number }} \
+            --arch ${{ matrix.arch }} \
+            --image-name ci:${{ github.run_number }}
+
   create_manifest:
     name: Create Manifest
     runs-on: ubuntu-latest
@@ -352,8 +365,19 @@ jobs:
             --repo ${{ matrix.registry.repo }} \
             --manifest \
             --github-sha ${ZM_VERSION} \
-            --run-number ${{ github.run_number }}
+            --run-number ${{ github.run_number }} \
             --latest
+
+      # if its tagged, push to release
+      - name: Push image (tag)
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          ./publish.py \
+            --tag release \
+            --repo ${{ matrix.registry.repo }} \
+            --manifest \
+            --github-sha ${ZM_VERSION} \
+            --run-number ${{ github.run_number }}
 
   dispatch:
     name: Dispatch event to eventserver-base
