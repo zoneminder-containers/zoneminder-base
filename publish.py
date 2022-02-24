@@ -13,7 +13,7 @@ ARCH_386 = "i386"
 ARCH_AMD64 = "amd64"
 ARCH_ARMV6 = "armv6"
 ARCH_ARMV7 = "armv7"
-ARCH_ARM64 = "aarch64"
+ARCH_ARM64 = "arm64"
 ARCHS = [ARCH_386, ARCH_AMD64, ARCH_ARMV7, ARCH_ARM64]
 
 PUBLISH_LATEST = "{repo}:{arch}-latest"
