@@ -247,7 +247,7 @@ jobs:
       - name: Push image (ref)
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          publish.py \
+          ./publish.py \
             --tag ${GITHUB_REF##*/} \
             --repo ${{ matrix.registry.repo }} \
             --image \
@@ -260,7 +260,7 @@ jobs:
       - name: Push image (nightly)
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          publish.py \
+          ./publish.py \
             --tag nightly \
             --repo ${{ matrix.registry.repo }} \
             --image \
@@ -273,7 +273,7 @@ jobs:
       - name: Push image (tag)
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          publish.py \
+          ./publish.py \
             --tag ${GITHUB_REF##*/} \
             --repo ${{ matrix.registry.repo }} \
             --image \
@@ -319,7 +319,7 @@ jobs:
       - name: Push image (ref)
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          publish.py \
+          ./publish.py \
             --tag ${GITHUB_REF##*/} \
             --repo ${{ matrix.registry.repo }} \
             --manifest \
@@ -330,7 +330,7 @@ jobs:
       - name: Push image (nightly)
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          publish.py \
+          ./publish.py \
             --tag nightly \
             --repo ${{ matrix.registry.repo }} \
             --manifest \
@@ -341,7 +341,7 @@ jobs:
       - name: Push image (tag)
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          publish.py \
+          ./publish.py \
             --tag ${GITHUB_REF##*/} \
             --repo ${{ matrix.registry.repo }} \
             --manifest \
