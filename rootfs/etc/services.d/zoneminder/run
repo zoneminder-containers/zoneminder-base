@@ -1,14 +1,16 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 . "/usr/local/bin/logger"
 # ==============================================================================
 # ZoneMinder
 # Runs ZoneMinder
 # ==============================================================================
 
+echo "Waiting for Socklog to start" | info
+s6-svwait -U /run/service/socklog
 echo "Waiting for MariaDB to start" | info
-/bin/s6-svwait -U /var/run/s6/services/mariadb
+s6-svwait -U /run/service/mariadb
 echo "Waiting for mariadb-configure to complete..." | info
-/bin/s6-svwait -U /var/run/s6/services/mariadb-configure
+s6-svwait -U /run/service/mariadb-configure
 
 echo "Starting ZoneMinder..." | info
 s6-setuidgid www-data /usr/bin/zmpkg.pl start
@@ -24,5 +26,3 @@ until [ "$(pgrep -fc /usr/bin/zm)" -lt "1" ]; do
   sleep 1
 done
 echo "ZoneMinder has crashed! Exiting..." | error
-# This is required or the container stop hangs
-s6-svscanctl -t /var/run/s6/services

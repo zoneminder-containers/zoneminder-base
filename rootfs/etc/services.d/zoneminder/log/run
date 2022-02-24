@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 program_name="zoneminder-service"
 
 s6-format-filter "%1 %s" "[${program_name}]" | logutil-service /log/"${program_name}"

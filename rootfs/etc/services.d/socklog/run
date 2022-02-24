@@ -1,10 +1,8 @@
 #!/command/with-contenv bash
 . "/usr/local/bin/logger"
-program_name="fcgiwrap"
 # ==============================================================================
-# fcgiwrap
-# Terminate fcgiwrap
+# Socklog
+# Starts socklog to capture logs
 # ==============================================================================
 
-echo "Stopping fcgiwrap" | info "${program_name} "
-killall -15 fcgiwrap
+s6-socklog -d3 -t3000

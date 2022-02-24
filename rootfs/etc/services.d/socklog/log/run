@@ -1,0 +1,12 @@
+#!/command/with-contenv bash
+program_name="zoneminder"
+
+s6-tai64n | s6-tai64nlocal | s6-format-filter "%1 %s" "[${program_name}]" | \
+  s6-envuidgid -D 65534:65534 nobody \
+    s6-log -b -- \
+        - \
+        +local1.* \
+        n"${MAX_LOG_NUMBER}" \
+        s"${MAX_LOG_SIZE_BYTES}" \
+        1 \
+      /log/"${program_name}"

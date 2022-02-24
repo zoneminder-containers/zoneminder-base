@@ -1,8 +1,8 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 for _ in {1..3}; do
   if ! (fdmove -c 2 1 \
-      mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" -e 'USE zm;' \
+      mysql --connect-timeout=1 -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" -e 'USE zm;' \
       > /dev/null); then
         exit 1 # mysql is not running
   fi

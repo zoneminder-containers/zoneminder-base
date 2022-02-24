@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 . "/usr/local/bin/logger"
 # ==============================================================================
 # Mariadb
@@ -8,13 +8,12 @@
 s6-notifyoncheck -n 1000 echo "Waiting for Mariadb to start" | info
 
 # Wait until db is initially ready before polling
-/bin/s6-svwait -U /var/run/s6/services/mariadb
+s6-svwait -U /run/service/mariadb
 echo "Mariadb is up! Proceeding to monitoring." | info
 
 # Need to sleep to act like service is running
 # Terminate container if db dies
-until ! (/var/run/s6/services/mariadb/data/check); do
+until ! (/run/service/mariadb/data/check); do
   sleep 1
 done
 echo "Mariadb could not be reached! Exiting..." | error
-echo -n "1" > /var/run/s6/container_environment/SHUTDOWN_REASON_DB_IS_DOWN

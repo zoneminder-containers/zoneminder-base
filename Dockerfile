@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:experimental
 ARG ZM_VERSION=master
 ARG S6_ARCH=amd64
-ARG S6_OVERLAY_VERSION="v2.2.0.3"
 
 #####################################################################
 #                                                                   #
@@ -44,7 +43,8 @@ RUN set -x \
 
 COPY rootfs .
 RUN set -x \
-    && find . -type f -print0 | xargs -0 -n 1 -P 4 dos2unix
+    && find . -type f -print0 | xargs -0 -n 1 -P 4 dos2unix \
+    && chmod -R +x *
 
 #####################################################################
 #                                                                   #
@@ -54,20 +54,17 @@ RUN set -x \
 FROM alpine:latest as s6downloader
 # Required to persist build arg
 ARG S6_ARCH
-ARG S6_OVERLAY_VERSION
 WORKDIR /s6downloader
 
 RUN set -x \
-    && wget -O /tmp/s6-overlay.tar.gz "https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${S6_ARCH}.tar.gz" \
+    && S6_OVERLAY_VERSION=$(wget --no-check-certificate -qO - https://api.github.com/repos/just-containers/s6-overlay/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') \
+    && S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:1} \
+    && wget -O /tmp/s6-overlay-arch.tar.xz "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64-${S6_OVERLAY_VERSION}.tar.xz" \
+    && wget -O /tmp/s6-overlay-noarch.tar.xz "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz" \
     && mkdir -p /tmp/s6 \
-    && tar zxvf /tmp/s6-overlay.tar.gz -C /tmp/s6 \
+    && tar -Jxvf /tmp/s6-overlay-noarch.tar.xz -C /tmp/s6 \
+    && tar -Jxvf /tmp/s6-overlay-arch.tar.xz -C /tmp/s6 \
     && cp -r /tmp/s6/* .
-
-RUN set -x \
-    && wget -O /tmp/socklog-overlay.tar.gz "https://github.com/just-containers/socklog-overlay/releases/latest/download/socklog-overlay-${S6_ARCH}.tar.gz" \
-    && mkdir -p /tmp/socklog \
-    && tar zxvf /tmp/socklog-overlay.tar.gz -C /tmp/socklog \
-    && cp -r /tmp/socklog/* .
 
 #####################################################################
 #                                                                   #
@@ -273,7 +270,6 @@ RUN set -x \
 ENV \
     S6_FIX_ATTRS_HIDDEN=1 \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
-    SOCKLOG_TIMESTAMP_FORMAT="" \
     MAX_LOG_SIZE_BYTES=1000000 \
     MAX_LOG_NUMBER=10
 

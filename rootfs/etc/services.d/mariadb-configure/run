@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 . "/usr/local/bin/logger"
 # ==============================================================================
 # mariadb-configure
@@ -6,11 +6,11 @@
 # ==============================================================================
 
 # Reconfigure to be oneshot
-/bin/s6-svc -O /var/run/s6/services/mariadb-configure
+s6-svc -O /run/service/mariadb-configure
 
 echo "Waiting for MariaDB to start" | info
 # Wait for db to be up before configuring
-/bin/s6-svwait -U /var/run/s6/services/mariadb
+s6-svwait -U /run/service/mariadb
 
 for f in /etc/mariadbconfigure.d/*.sh; do
   bash "$f"

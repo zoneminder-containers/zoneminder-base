@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 . "/usr/local/bin/logger"
 # ==============================================================================
 # Nginx
@@ -6,8 +6,9 @@
 # ==============================================================================
 
 echo "Waiting for ZoneMinder to start" | info
-/bin/s6-svwait -U /var/run/s6/services/zoneminder
+s6-svwait -U /run/service/zoneminder
 
 echo "Starting Nginx..." | info
 
-exec fdmove -c 2 1 nginx -g 'daemon off;'
+exec fdmove -c 2 1 \
+  /usr/sbin/nginx -g 'daemon off;'

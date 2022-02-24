@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 . "/usr/local/bin/logger"
 # ==============================================================================
 # fcgiwrap
@@ -12,4 +12,4 @@ rm /zoneminder/run/fcgiwrap.socket > /dev/null 2>&1
 
 exec s6-setuidgid www-data \
     fdmove -c 2 1 \
-      fcgiwrap -f -c "${FCGIWRAP_PROCESSES}" -s unix:/zoneminder/run/fcgiwrap.socket
+      /usr/sbin/fcgiwrap -f -c "${FCGIWRAP_PROCESSES}" -s unix:/zoneminder/run/fcgiwrap.socket

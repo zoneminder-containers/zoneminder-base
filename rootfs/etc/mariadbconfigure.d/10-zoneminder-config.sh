@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 . "/usr/local/bin/logger"
 # ==============================================================================
 # ZoneMinder-config
@@ -12,9 +12,6 @@ if ! (fdmove -c 2 1 \
           > /dev/null); then
   echo "Creating ZoneMinder db for first run" | init
   mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" < /usr/share/zoneminder/db/zm_create.sql
-
-  echo "Disabling file log to prevent duplicate logs from syslog" | init
-  insert_command+="UPDATE Config SET Value = -5 WHERE Name = 'ZM_LOG_LEVEL_FILE';"
 
   echo "Configuring ZoneMinder Email settings..." | init
   insert_command+="UPDATE Config SET Value = 1 WHERE Name = 'ZM_NEW_MAIL_MODULES';"
@@ -31,6 +28,10 @@ else
   insert_command+="UPDATE Config SET Value = '${EMAIL_ADDRESS}' WHERE Name = 'ZM_FROM_EMAIL';"
 
 fi
+
+# Enforce disabling of file logs
+echo "Disabling file log to prevent duplicate logs from syslog" | info
+insert_command+="UPDATE Config SET Value = -5 WHERE Name = 'ZM_LOG_LEVEL_FILE';"
 
 if [[ -n "${ZM_SERVER_HOST}" ]] \
  && [ "$(mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -h"${MYSQL_HOST}" zm -e \
