@@ -203,8 +203,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - getversion
-      # - test
-      - build
+      - test
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
     strategy:
