@@ -291,6 +291,7 @@ jobs:
     name: Create Manifest
     runs-on: ubuntu-latest
     needs:
+      - getversion
       - publish
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
