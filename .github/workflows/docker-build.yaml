@@ -354,7 +354,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - getversion
-      - retag_arch
     steps:
       - name: Trigger ES Build
         run: |
