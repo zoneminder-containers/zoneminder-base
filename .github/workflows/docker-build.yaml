@@ -75,12 +75,6 @@ jobs:
 
       - name: Build ZoneMinder
         run: |
-          ./publish.py \
-            --tag ${GITHUB_REF##*/} \
-            --repo ${{ matrix.registry.repo }} \
-            --manifest \
-            --github-sha ${ZM_VERSION} \
-            --run-number ${{ github.run_number }}
           set -x
           docker build \
             --build-arg ZM_VERSION=${ZM_VERSION} \
@@ -234,6 +228,9 @@ jobs:
             repo: ghcr.io/zoneminder-containers/zoneminder-base
           }
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Download container artifact
         uses: actions/download-artifact@v2
         with:
@@ -315,6 +312,9 @@ jobs:
             repo: ghcr.io/zoneminder-containers/zoneminder-base
           }
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Docker login
         run: |
           docker login ${{ matrix.registry.url }} -u ${{ secrets[matrix.registry.username] }} -p ${{ secrets[matrix.registry.password] }}
