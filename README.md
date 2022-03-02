@@ -27,16 +27,22 @@ There is also full support for multi-server setups with automation to link all s
 4. Place all these files in the same folder and configure .env and the yml files as you please.
 5. Run `docker-compose up -d` to start.
 
-NOTE: The default docker-compose.yml files use the `latest` tag which runs the latest nightly builds of ZoneMinder.
-This is the bleeding edge and is not recommended for production!
+NOTE: The default docker-compose.yml files use the `latest` tag which runs the latest release build of ZoneMinder.
 
 ## Defining a Version
 
 1. Replace `latest` in the `docker-compose.yml` file with any ZoneMinder version you would like to run.
 You can find all available releases [here](https://github.com/zoneminder-containers/zoneminder-base/releases).
 Ex. `1.36.1`
-   
+
 Note: For those new to Docker, these values are known as the container tag.
+
+### Available Tags
+
+- `branch_name`: This is the branch name of this repository, not Zoneminder.
+- `release`: References the latest release
+- `latest`: Same as release
+- `nightly`: Nightly builds from master on Zoneminder
 
 ## Updates
 
