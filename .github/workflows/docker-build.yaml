@@ -38,10 +38,10 @@ jobs:
         include:
           - arch: linux/386
             arch_friendly: i386
-            s6_arch: x86
+            s6_arch: i686
           - arch: linux/amd64
             arch_friendly: amd64
-            s6_arch: amd64
+            s6_arch: x86_64
           - arch: linux/arm/v7
             arch_friendly: armv7
             s6_arch: armhf
