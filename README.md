@@ -4,6 +4,12 @@
 [![DockerHub Pulls](https://img.shields.io/docker/pulls/yaoa/zoneminder-base.svg)](https://hub.docker.com/r/yaoa/zoneminder-base)
 ![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
 
+# Maintenance Mode Notice
+I do not personally use this and as such will have limited time to invest into this project. Basic things will be fixed,
+however larger issues from either changes from Zoneminder or otherwise will likely not be fixed. If there is substantial
+demand for a new feature/improvement, I will consider implementing it if I have time. Sponsoring me and noting this is
+the reason you are doing so will help me invest more time into this as well.
+
 # Why
 This is an automatically updating ZoneMinder container built using s6-overlay with full support for all things containers.
 This aims to be the container that will never die as things will automatically keep themselves up to date and allow for
