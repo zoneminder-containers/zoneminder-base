@@ -2,6 +2,7 @@ name: Docker Build
 
 on:
   push:
+  pull_request:
   schedule:
     - cron: '0 0 * * *'
 
@@ -204,7 +205,7 @@ jobs:
     needs:
       - getversion
       - test
-    if: ${{ !startsWith(github.ref, 'refs/pull/') }}
+    if: ${{ !startsWith(github.ref, 'refs/pull/') && !startsWith(github.ref, 'refs/heads/dependabot/') }}
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
     strategy:
