@@ -78,7 +78,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN set -x \
     && apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
         ca-certificates \
         gnupg \
         wget \
@@ -207,7 +207,7 @@ RUN set -x \
 # PHP-fpm not required for apache
 RUN set -x \
     && apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
         fcgiwrap \
         mailutils \
         msmtp \
