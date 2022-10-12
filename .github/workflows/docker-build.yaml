@@ -131,7 +131,7 @@ jobs:
         uses: docker/setup-qemu-action@v2
 
       - name: Download container artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ci-${{ matrix.arch }}-${{ github.run_number }}
 
@@ -231,7 +231,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download container artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ci-${{ matrix.arch }}-${{ github.run_number }}
 
