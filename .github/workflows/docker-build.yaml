@@ -2,6 +2,7 @@ name: Docker Build
 
 on:
   push:
+  pull_request:
   schedule:
     - cron: '0 0 * * *'
 
@@ -15,7 +16,7 @@ jobs:
       - name: Set ZoneMinder Build Version
         id: set-version
         run: |
-          if [[ ${GITHUB_REF} == refs/heads/* ]]; then
+          if [[ ${GITHUB_REF} == refs/heads/* || ${GITHUB_REF} == refs/pull/* ]]; then
             # Build from latest ZoneMinder commit
             ZM_VERSION=$(wget \
               -qO - https://api.github.com/repos/ZoneMinder/zoneminder/commits/master \
@@ -204,6 +205,7 @@ jobs:
     needs:
       - getversion
       - test
+    if: ${{ !startsWith(github.ref, 'refs/pull/') && !startsWith(github.ref, 'refs/heads/dependabot/') }}
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
     strategy:
