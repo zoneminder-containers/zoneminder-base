@@ -204,6 +204,7 @@ jobs:
     needs:
       - getversion
       - test
+    if: ${{ !startsWith(github.ref, 'refs/pull/') }}
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
     strategy:
