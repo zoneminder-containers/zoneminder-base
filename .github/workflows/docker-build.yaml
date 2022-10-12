@@ -16,7 +16,7 @@ jobs:
       - name: Set ZoneMinder Build Version
         id: set-version
         run: |
-          if [[ ${GITHUB_REF} == refs/heads/* ]]; then
+          if [[ ${GITHUB_REF} == refs/heads/* || ${GITHUB_REF} == refs/pull/* ]]; then
             # Build from latest ZoneMinder commit
             ZM_VERSION=$(wget \
               -qO - https://api.github.com/repos/ZoneMinder/zoneminder/commits/master \
