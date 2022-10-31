@@ -24,7 +24,7 @@ jobs:
           echo "::set-output name=version::${VERSION}"
       - name: Push tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           custom_tag: ${{ steps.update.outputs.version }}
           tag_prefix: ''
