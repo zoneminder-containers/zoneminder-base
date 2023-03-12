@@ -31,6 +31,7 @@ jobs:
   build:
     name: Build Docker Image
     runs-on: ubuntu-latest
+    if: ${{ needs.getversion.outputs.build-version != '' }}
     needs: getversion
     env:
       ZM_VERSION: ${{ needs.getversion.outputs.build-version }}
