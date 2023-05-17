@@ -214,7 +214,6 @@ RUN set -x \
         nginx \
         php-fpm \
         tzdata \
-        libcurl3-gnutls \
     && rm -rf /var/lib/apt/lists/*
 
 # Remove rsyslog as its unneeded and hangs the container on shutdown
