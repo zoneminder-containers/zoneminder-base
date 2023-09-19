@@ -71,7 +71,7 @@ RUN set -x \
 # Prepare base-image with core programs + repository                #
 #                                                                   #
 #####################################################################
-FROM debian:bullseye as base-image-core
+FROM debian:bookworm as base-image-core
 
 # Skip interactive post-install scripts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -201,7 +201,7 @@ ARG ZM_VERSION
 # Add Nginx Repo
 RUN set -x \
     && wget -qO - https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx.gpg > /dev/null \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nginx.gpg] https://nginx.org/packages/mainline/debian/ bullseye nginx" > /etc/apt/sources.list.d/nginx.list
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/nginx.gpg] https://nginx.org/packages/mainline/debian/ bookworm nginx" > /etc/apt/sources.list.d/nginx.list
 
 # Install additional services required by ZM ("Recommends")
 # PHP-fpm not required for apache
