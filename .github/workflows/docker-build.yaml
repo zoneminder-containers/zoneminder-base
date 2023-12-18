@@ -133,7 +133,7 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: Download container artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ci-${{ matrix.arch }}-${{ github.run_number }}
 
@@ -189,7 +189,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download container artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
@@ -234,7 +234,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download container artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ci-${{ matrix.arch }}-${{ github.run_number }}
 
