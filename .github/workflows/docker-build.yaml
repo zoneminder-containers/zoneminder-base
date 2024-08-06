@@ -147,32 +147,32 @@ jobs:
         timeout-minutes: 5
         run: |
           set -x
-          docker-compose -f docker-compose.test.yml up &
+          docker compose -f docker-compose.test.yml up &
           sleep 60
           if [ ! "$(docker ps -q -f name=zoneminder)" ]; then
               exit 1
           fi
-          docker-compose -f docker-compose.test.yml down
-          docker-compose -f docker-compose.test.yml up &
+          docker compose -f docker-compose.test.yml down
+          docker compose -f docker-compose.test.yml up &
           sleep 60
-          docker-compose -f docker-compose.test.yml down
+          docker compose -f docker-compose.test.yml down
 
       # Fails if zoneminder fails to stop normally
       - name: Start image and stop zoneminder
         timeout-minutes: 5
         run: |
           set -x
-          docker-compose -f docker-compose.test.yml up &
+          docker compose -f docker-compose.test.yml up &
           sleep 60
           docker stop zoneminder
-          docker-compose -f docker-compose.test.yml down
+          docker compose -f docker-compose.test.yml down
 
       # Fails if zoneminder doesn't stop when db is down
       - name: Start image and stop db
         timeout-minutes: 5
         run: |
           set -x
-          docker-compose -f docker-compose.test.yml up &
+          docker compose -f docker-compose.test.yml up &
           sleep 120
           docker stop db
           sleep 60
