@@ -31,7 +31,7 @@ There is also full support for multi-server setups with automation to link all s
 2. Download docker-compose.yml or docker-compose-multi.yml depending on single/multi server setups.
 3. Download .env
 4. Place all these files in the same folder and configure .env and the yml files as you please.
-5. Run `docker-compose up -d` to start.
+5. Run `docker compose up -d` to start.
 
 NOTE: The default docker-compose.yml files use the `latest` tag which runs the latest release build of ZoneMinder.
 
@@ -53,8 +53,8 @@ Note: For those new to Docker, these values are known as the container tag.
 ## Updates
 
 1. Replace the tag with the new version to update to, or for `latest`, simply continue to the next step.
-2. `docker-compose pull`
-3. `docker-compose up -d`
+2. `docker compose pull`
+3. `docker compose up -d`
 
 
 # Helpful Info
