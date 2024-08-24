@@ -21,7 +21,7 @@ jobs:
             | awk '/tag_name/{print $4;exit}' FS='[""]' \
             > latest_version.txt
           export VERSION=`cat latest_version.txt`
-          echo "::set-output name=version::${VERSION}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
       - name: Push tag
         id: tag_version
         if: ${{ steps.update.outputs.version != '' }}
