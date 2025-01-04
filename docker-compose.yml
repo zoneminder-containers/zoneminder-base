@@ -23,7 +23,7 @@ services:
     depends_on:
       - db
     ports:
-      - 80:80
+      - 8081:80
     networks:
       - zoneminder
     volumes:
